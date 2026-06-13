@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw video sources (web mp4s live in public/videos)
+assets/ai-experiments/*.mov
