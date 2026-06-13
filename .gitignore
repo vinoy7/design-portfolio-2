@@ -24,6 +24,7 @@
 .DS_Store
 *.pem
 README.md
+progress.md
 
 # debug
 npm-debug.log*
