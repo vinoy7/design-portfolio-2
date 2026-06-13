@@ -56,7 +56,7 @@ const TESTIMONIALS: Testimonial[] = [
   },
   {
     id:    "francesco",
-    quote: "Across all our products, Vinoy made sure what got built actually matched what was designed. Vinoy would bring a perspective that's not just 'how does this look' but 'why are we doing it this way'. He helped plan and assign tasks to developers; helped them through the smallest of doubts. Apart from the work, he genuinely lifts the energy of a team. He's one of those people you actually look forward to jumping on a call with. That especially matters in a team that works remotely. If you get the chance to work with him, take it.",
+    quote: "Across all our products, Vinoy made sure what got built actually matched what was designed. Vinoy would bring a perspective that's not just 'how does this look' but 'why are we doing it this way'. Apart from the work, he genuinely lifts the energy of a team. He's one of those people you actually look forward to jumping on a call with. That especially matters in a team that works remotely. If you get the chance to work with him, take it.",
     name:  "Francesco Rocchi",
     role:  "(Co-founder & CTO, Fusepay)",
     photo: {
@@ -254,7 +254,7 @@ export default function Testimonials() {
               top:            "50%",
               left:           "50%",
               width:          "600px",
-              minHeight:      "336px",
+              minHeight:      t.id === "ken" ? "348px" : t.id === "shivam" ? "348px" : t.id === "francesco" ? "400px" : "336px",
               background:     "#fff",
               boxShadow:      "0px 1.652px 33.037px 0px rgba(0,0,0,0.1)",
               overflow:       "hidden",
