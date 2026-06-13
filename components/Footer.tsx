@@ -7,7 +7,7 @@ export default function Footer() {
       {/* CTA section */}
       <div
         className="relative overflow-hidden"
-        style={{ background: "#000", height: "245px" }}
+        style={{ background: "#000", height: "245px", /* clipPath: "inset(0 round 12px)" */ }}
       >
         {/* Background texture */}
         <div

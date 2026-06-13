@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "motion/react";
+// import { useSquircle } from "@/components/hooks/useSquircle";
+const arrowDefaultSrc = "/view-case-study-arrow.svg";
+const arrowHoverSrc = "/view-case-study-arrow-hover.svg";
 import fusepayImg from "@/assets/work/fusepay-card-image.png";
 import connectImg from "@/assets/work/connectandsell-card-image.png";
 import coditasBg from "@/assets/work/coditas-bg-gradient.png";
@@ -105,40 +109,101 @@ function CardSubtitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ViewCaseStudy() {
+function ViewCaseStudy({ hovered }: { hovered: boolean }) {
   return (
-    <p
-      style={{
-        fontFamily: "var(--font-dm-sans)",
-        fontWeight: 500,
-        fontSize: "19px",
-        lineHeight: "28px",
-        letterSpacing: "-0.19px",
-        color: "#b48a42",
-        whiteSpace: "nowrap",
-        cursor: "pointer",
-      }}
+    <div
+      style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}
     >
-      View Case Study →
-    </p>
+      <p
+        style={{
+          fontFamily: "var(--font-dm-sans)",
+          fontWeight: 500,
+          fontSize: "19px",
+          lineHeight: "28px",
+          letterSpacing: "-0.19px",
+          color: "#b48a42",
+          whiteSpace: "nowrap",
+        }}
+      >
+        View Case Study
+      </p>
+
+      <div
+        style={{
+          position: "relative",
+          width: hovered ? "184px" : "28px",
+          height: "28px",
+          flexShrink: 0,
+          overflow: "hidden",
+          transition: "width 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
+      >
+        {/* Default arrow */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={arrowDefaultSrc}
+          alt=""
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "28px",
+            height: "28px",
+            opacity: hovered ? 0 : 1,
+            transition: "opacity 0.15s ease",
+          }}
+        />
+        {/* Hover line + arrow */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={arrowHoverSrc}
+          alt=""
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "184px",
+            height: "28px",
+            maxWidth: "none",
+            opacity: hovered ? 1 : 0,
+            transition: "opacity 0.25s ease 0.15s",
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
 const revealProps = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 56 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.1 },
-  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  viewport: { once: true, amount: 0.05 },
+  transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 });
 
+// const SQUIRCLE = { radius: 12, smoothing: 0.6 };
+const CARD_BORDER = "1px solid #e6e6e6";
+
 export default function WorkContent() {
+  const [hovered1, setHovered1] = useState(false);
+  const [hovered2, setHovered2] = useState(false);
+  const [hovered3, setHovered3] = useState(false);
+  const [hovered4, setHovered4] = useState(false);
+  // const card1Ref = useSquircle(SQUIRCLE);
+  // const card2Ref = useSquircle(SQUIRCLE);
+  // const card3Ref = useSquircle(SQUIRCLE);
+  // const card4Ref = useSquircle(SQUIRCLE);
+
   return (
     <div className="flex flex-col gap-5">
       {/* Card 1: Fusepay — image left, text right */}
       <motion.div
         {...revealProps(0)}
+        // ref={card1Ref}
         className="flex overflow-hidden"
-        style={{ background: "#fff" }}
+        style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+        onMouseEnter={() => setHovered1(true)}
+        onMouseLeave={() => setHovered1(false)}
       >
         {/* Image */}
         <div
@@ -160,8 +225,7 @@ export default function WorkContent() {
             width: "530px",
             flexShrink: 0,
             padding: "40px 40px 32px 40px",
-            border: "1px solid #e6e6e6",
-            borderLeft: "none",
+            borderLeft: "1px solid #e6e6e6",
           }}
         >
           <div className="flex flex-col gap-6">
@@ -173,14 +237,14 @@ export default function WorkContent() {
               </CardSubtitle>
             </div>
           </div>
-          <ViewCaseStudy />
+          <ViewCaseStudy hovered={hovered1} />
 
           {/* Latest badge */}
           <div
             className="absolute"
             style={{
-              top: "-1px",
-              right: "-1px",
+              top: 0,
+              right: 0,
               background: "#f5e7ce",
               padding: "6px 16px",
             }}
@@ -204,8 +268,11 @@ export default function WorkContent() {
       {/* Card 2: ConnectAndSell — text left, image right */}
       <motion.div
         {...revealProps(0.1)}
+        // ref={card2Ref}
         className="flex overflow-hidden"
-        style={{ background: "#fff" }}
+        style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+        onMouseEnter={() => setHovered2(true)}
+        onMouseLeave={() => setHovered2(false)}
       >
         {/* Text panel */}
         <div
@@ -215,8 +282,7 @@ export default function WorkContent() {
             flexShrink: 0,
             height: "510px",
             padding: "40px 40px 32px 40px",
-            border: "1px solid #e6e6e6",
-            borderRight: "none",
+            borderRight: "1px solid #e6e6e6",
           }}
         >
           <div className="flex flex-col gap-6">
@@ -233,7 +299,7 @@ export default function WorkContent() {
               </CardSubtitle>
             </div>
           </div>
-          <ViewCaseStudy />
+          <ViewCaseStudy hovered={hovered2} />
         </div>
 
         {/* Image */}
@@ -255,8 +321,11 @@ export default function WorkContent() {
         {/* Card 3: Coditas OneView */}
         <motion.div
           {...revealProps(0.15)}
-          className="flex flex-col overflow-hidden flex-1"
-          style={{ background: "#fff", border: "1px solid #e6e6e6" }}
+          // ref={card3Ref}
+          className="flex flex-col flex-1 overflow-hidden"
+          style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+          onMouseEnter={() => setHovered3(true)}
+          onMouseLeave={() => setHovered3(false)}
         >
           {/* Image area */}
           <div
@@ -292,7 +361,7 @@ export default function WorkContent() {
 
           {/* Text panel */}
           <div
-            className="flex flex-col justify-between flex-1 overflow-hidden"
+            className="flex flex-col flex-1 overflow-hidden"
             style={{
               padding: "40px 40px 32px 40px",
               borderTop: "1px solid #e6e6e6",
@@ -302,21 +371,26 @@ export default function WorkContent() {
             <div className="flex flex-col gap-6">
               <MetaRow tags={["Internal", "EdTech"]} date="Jun 2022 - Apr 2023" />
               <div className="flex flex-col gap-2">
-                <CardTitle>{"Coditas' Internal Candidate Tracker"}</CardTitle>
+                <CardTitle>{"Coditas' Candidate Tracker"}</CardTitle>
                 <CardSubtitle>
                   {"OneView provides the L&D team an overview of the entire candidate tracking process."}
                 </CardSubtitle>
               </div>
             </div>
-            <ViewCaseStudy />
+            <div style={{ marginTop: "120px" }}>
+              <ViewCaseStudy hovered={hovered3} />
+            </div>
           </div>
         </motion.div>
 
         {/* Card 4: Weekday */}
         <motion.div
           {...revealProps(0.2)}
-          className="flex flex-col overflow-hidden flex-1"
-          style={{ background: "#fff", border: "1px solid #e6e6e6" }}
+          // ref={card4Ref}
+          className="flex flex-col flex-1 overflow-hidden"
+          style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+          onMouseEnter={() => setHovered4(true)}
+          onMouseLeave={() => setHovered4(false)}
         >
           {/* Image area */}
           <div
@@ -347,7 +421,7 @@ export default function WorkContent() {
 
           {/* Text panel */}
           <div
-            className="flex flex-col justify-between flex-1 overflow-hidden"
+            className="flex flex-col flex-1 overflow-hidden"
             style={{
               padding: "40px 40px 32px 40px",
               borderTop: "1px solid #e6e6e6",
@@ -363,7 +437,9 @@ export default function WorkContent() {
                 </CardSubtitle>
               </div>
             </div>
-            <ViewCaseStudy />
+            <div style={{ marginTop: "120px" }}>
+              <ViewCaseStudy hovered={hovered4} />
+            </div>
           </div>
         </motion.div>
       </div>

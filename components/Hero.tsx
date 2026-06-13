@@ -55,6 +55,7 @@ export default function Hero() {
           top: "265px",
           width: "510px",
           height: "245px",
+          // borderRadius: "12px",
         }}
       >
         <div

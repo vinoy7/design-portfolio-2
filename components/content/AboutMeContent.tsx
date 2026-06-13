@@ -68,10 +68,10 @@ function PlaceholderSection({
 }
 
 const revealProps = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 56 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.1 },
-  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  viewport: { once: true, amount: 0.05 },
+  transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 });
 
 export default function AboutMeContent() {

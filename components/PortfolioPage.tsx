@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Hero from "./Hero";
 import TabNav, { type Tab } from "./TabNav";
@@ -42,6 +42,11 @@ function TabDescription({ tab }: { tab: Tab }) {
 export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState<Tab>("work");
 
+  useEffect(() => {
+    history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
+
   const showTestimonials = activeTab === "work";
   const hasDescription = activeTab !== "about";
 
@@ -73,10 +78,10 @@ export default function PortfolioPage() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab + "-desc"}
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 style={{ marginTop: "32px" }}
               >
                 <TabDescription tab={activeTab} />
@@ -91,10 +96,10 @@ export default function PortfolioPage() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           >
             {activeTab === "work" && <WorkContent />}
             {activeTab === "playground" && <PlaygroundContent />}
