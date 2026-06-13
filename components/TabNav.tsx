@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "motion/react";
+
 export type Tab = "work" | "playground" | "ai" | "about";
 
 const TABS: { id: Tab; label: string }[] = [
@@ -24,13 +26,14 @@ export default function TabNav({ active, onChange }: TabNavProps) {
             key={tab.id}
             onClick={() => onChange(tab.id)}
             style={{
+              position: "relative",
               fontFamily: "var(--font-dm-sans)",
               fontWeight: isActive ? 600 : 400,
               fontSize: "16px",
               lineHeight: "20px",
               letterSpacing: "-0.16px",
               color: isActive ? "#000" : "#696969",
-              background: isActive ? "#f5eee2" : "transparent",
+              background: "transparent",
               border: "none",
               borderRadius: "60px",
               padding: "12px 24px",
@@ -38,7 +41,19 @@ export default function TabNav({ active, onChange }: TabNavProps) {
               whiteSpace: "nowrap",
             }}
           >
-            {tab.label}
+            {isActive && (
+              <motion.span
+                layoutId="tab-pill"
+                transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "#f5eee2",
+                  borderRadius: "60px",
+                }}
+              />
+            )}
+            <span style={{ position: "relative" }}>{tab.label}</span>
           </button>
         );
       })}
