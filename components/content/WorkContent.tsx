@@ -4,8 +4,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion } from "motion/react";
 // import { useSquircle } from "@/components/hooks/useSquircle";
-const arrowDefaultSrc = "/view-case-study-arrow.svg";
-const arrowHoverSrc = "/view-case-study-arrow-hover.svg";
 import fusepayImg from "@/assets/work/fusepay-card-image.png";
 import connectImg from "@/assets/work/connectandsell-card-image.png";
 import coditasBg from "@/assets/work/coditas-bg-gradient.png";
@@ -134,41 +132,37 @@ function ViewCaseStudy({ hovered }: { hovered: boolean }) {
           width: hovered ? "184px" : "28px",
           height: "28px",
           flexShrink: 0,
-          overflow: "hidden",
-          transition: "width 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+          transition: "width 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        {/* Default arrow */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={arrowDefaultSrc}
-          alt=""
+        {/* Line — elongates/shrinks; ends just before the chevron */}
+        <span
           style={{
             position: "absolute",
             left: 0,
-            top: 0,
-            width: "28px",
-            height: "28px",
-            opacity: hovered ? 0 : 1,
-            transition: "opacity 0.15s ease",
+            top: "13.1px",
+            right: "6px",
+            height: "1.75px",
+            borderRadius: "1px",
+            background: "#b48a42",
           }}
         />
-        {/* Hover line + arrow */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={arrowHoverSrc}
-          alt=""
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: "184px",
-            height: "28px",
-            maxWidth: "none",
-            opacity: hovered ? 1 : 0,
-            transition: "opacity 0.25s ease 0.15s",
-          }}
-        />
+        {/* Chevron — fixed size, pinned to the line's end */}
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 28 28"
+          fill="none"
+          style={{ position: "absolute", right: 0, top: 0 }}
+        >
+          <path
+            d="M17.0013 9.00006C17.0013 9.00006 22.1654 12.1555 22.1654 14.0001C22.1654 15.8447 17.0013 19.5001 17.0013 19.5001"
+            stroke="#b48a42"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </div>
     </div>
   );
