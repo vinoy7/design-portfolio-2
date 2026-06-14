@@ -55,6 +55,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
+    // Restore the tab from the URL hash so a reload lands on the same tab.
+    const TABS: Tab[] = ["work", "playground", "ai", "about"];
+    const h = window.location.hash.replace("#", "") as Tab;
+    if (TABS.includes(h)) setActiveTab(h);
     const tPill = setTimeout(() => setPillIn(true), 2000);
     const t = setTimeout(() => setIntro(false), 4300);
     return () => {
@@ -62,6 +66,11 @@ export default function PortfolioPage() {
       clearTimeout(t);
     };
   }, []);
+
+  const handleTab = (tab: Tab) => {
+    setActiveTab(tab);
+    history.replaceState(null, "", `#${tab}`);
+  };
 
   const showTestimonials = activeTab === "work";
   const hasDescription = activeTab !== "about";
@@ -95,7 +104,7 @@ export default function PortfolioPage() {
         >
           <TabNav
             active={activeTab}
-            onChange={setActiveTab}
+            onChange={handleTab}
             intro={intro}
             showActiveStyle={!intro || pillIn}
           />

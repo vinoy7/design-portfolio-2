@@ -93,7 +93,8 @@ export default function TabNav({
                   fontWeight: 600,
                   color: "#000",
                   opacity: styledActive ? 1 : 0,
-                  transition: "opacity 400ms ease",
+                  filter: styledActive ? "blur(0px)" : "blur(4px)",
+                  transition: "opacity 300ms ease, filter 300ms ease",
                 }}
               >
                 {tab.label}
@@ -104,7 +105,8 @@ export default function TabNav({
                   fontWeight: 400,
                   color: isHovered ? "#000" : "#696969",
                   opacity: styledActive ? 0 : 1,
-                  transition: "opacity 400ms ease, color 200ms ease",
+                  filter: styledActive ? "blur(4px)" : "blur(0px)",
+                  transition: "opacity 300ms ease, filter 300ms ease, color 200ms ease",
                 }}
               >
                 {tab.label}

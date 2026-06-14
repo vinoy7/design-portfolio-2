@@ -4,7 +4,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "motion/react";
 import { Play } from "@phosphor-icons/react";
+import Image from "next/image";
 import Matter from "matter-js";
+import f360DashboardImg from "@/assets/ai-experiments/f360-dashboard-screenshot.png";
 import nameMyFrameImg from "@/assets/ai-experiments/name-my-frame-screenshot.png";
 import mylosImg from "@/assets/ai-experiments/mylos-adventures-screenshot.png";
 import grokImg from "@/assets/ai-experiments/grok-ad-screenshot.png";
@@ -34,28 +36,14 @@ function PlayOverlayButton({ onClick }: { onClick: () => void }) {
         }}
       />
 
-      {/* Glass disc */}
+      {/* Play icon only — no disc, no ring. Drop-shadow keeps it legible. */}
       <span
-        className="relative flex items-center justify-center rounded-full transition-transform duration-300 ease-out group-hover:scale-[1.08] group-active:scale-95 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        className="relative flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-[1.12] group-active:scale-95 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         style={{
-          width: "86px",
-          height: "86px",
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.06)), rgba(16,16,18,0.28)",
-          backdropFilter: "blur(16px) saturate(160%)",
-          WebkitBackdropFilter: "blur(16px) saturate(160%)",
-          border: "1px solid rgba(255,255,255,0.38)",
-          boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.32)",
+          filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.45))",
         }}
       >
-        {/* Expanding ring — one-shot hover cue inviting the click */}
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-full opacity-70 transition-all duration-500 ease-out group-hover:scale-[1.45] group-hover:opacity-0 motion-reduce:hidden"
-          style={{ border: "1px solid rgba(255,255,255,0.6)" }}
-        />
-        <Play size={32} weight="fill" color="#ffffff" style={{ marginLeft: "-2px" }} />
+        <Play size={48} weight="fill" color="#ffffff" style={{ marginLeft: "-2px" }} />
       </span>
     </button>
   );
@@ -368,9 +356,80 @@ function CardBody({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Inline blue link: underline wipes in left→right on hover, weight 400→500. */
+function InlineLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative inline-block text-[#3341c9] transition-[font-weight] duration-200 hover:font-medium after:absolute after:left-0 after:-bottom-px after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#3341c9] after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100 hover:after:h-[1.5px]"
+    >
+      {children}
+    </a>
+  );
+}
+
 export default function AIExperimentsContent() {
   return (
     <div className="flex flex-col" style={{ gap: "87px" }}>
+      {/* Card 0: AI-assisted Dashboard Prototyping — text top, image bottom */}
+      <motion.div
+        {...revealProps(0)}
+        className="flex flex-col overflow-hidden"
+        style={{ background: "#fff" }}
+      >
+        {/* Text header */}
+        <div
+          style={{
+            padding: "32px 40px",
+            border: "1px solid #e6e6e6",
+            borderBottom: "none",
+          }}
+        >
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2">
+              <MetaTag>Claude Code</MetaTag>
+              <Dot />
+              <MetaTag>Figma</MetaTag>
+            </div>
+            <div className="flex flex-col gap-2">
+              <CardTitle>AI-assisted Dashboard Prototyping at Fusepay</CardTitle>
+              <CardBody>
+                As AI-assisted prototyping becomes a core skill for designers, I
+                experimented with building a dashboard for a product we&apos;re
+                developing at Fusepay. Using Figma design and Claude Code, I
+                quickly generated a frontend prototype to explore ideas with
+                stakeholders as well as test it with power users.
+                <br />
+                <br />
+                <InlineLink href="https://vinoy7.github.io/F360-Dashboard/">
+                  Explore the dashboard prototype
+                </InlineLink>
+              </CardBody>
+            </div>
+          </div>
+        </div>
+
+        {/* Image */}
+        <div
+          className="relative overflow-hidden w-full"
+          style={{ height: "510px", background: "#ebebeb" }}
+        >
+          <div
+            className="absolute"
+            style={{ width: "900px", left: "50%", top: "42px", transform: "translateX(-50%)" }}
+          >
+            <Image
+              src={f360DashboardImg}
+              alt="Fuse360 dashboard prototype"
+              width={900}
+              className="block w-full h-auto"
+            />
+          </div>
+        </div>
+      </motion.div>
+
       {/* Card 1: Name My Frame — text top, video bottom (full width) */}
       <motion.div
         {...revealProps(0)}
