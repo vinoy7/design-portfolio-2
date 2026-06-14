@@ -54,7 +54,9 @@ export default function Footer() {
           </div>
 
           <a
-            href="mailto:vinoy@fusepay.app"
+            href="https://cal.com/vinoy7/30min"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               background: "#292929",
               borderRadius: "4px",
@@ -98,10 +100,15 @@ export default function Footer() {
         </p>
 
         <div className="flex items-center gap-5">
-          {["Email", "LinkedIn", "Resume"].map((link) => (
+          {[
+            { label: "Email", href: "mailto:vinoy@fusepay.app", external: false },
+            { label: "LinkedIn", href: "https://www.linkedin.com/in/vinoy777", external: true },
+            { label: "Resume", href: "/Vinoy_Varghese_Resume.pdf", external: true },
+          ].map((link) => (
             <a
-              key={link}
-              href="#"
+              key={link.label}
+              href={link.href}
+              {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               style={{
                 fontFamily: "var(--font-dm-sans)",
                 fontWeight: 400,
@@ -114,7 +121,7 @@ export default function Footer() {
                 display: "block",
               }}
             >
-              {link}
+              {link.label}
             </a>
           ))}
         </div>
