@@ -1,5 +1,10 @@
 import PortfolioPage from "@/components/PortfolioPage";
+import DeviceGate from "@/components/DeviceGate";
 
 export default function Home() {
-  return <PortfolioPage />;
+  return (
+    <DeviceGate>
+      <PortfolioPage />
+    </DeviceGate>
+  );
 }

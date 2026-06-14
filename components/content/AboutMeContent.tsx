@@ -102,9 +102,9 @@ export default function AboutMeContent() {
         </div>
       </motion.div>
 
-      {/* How design happened for me? */}
+      {/* How design happened for me? — trails the portrait */}
       <motion.div
-        {...revealProps(0)}
+        {...revealProps(0.2)}
         className="flex flex-col gap-10"
         style={{ marginTop: "40px" }}
       >

@@ -81,12 +81,16 @@ export default function PortfolioPage() {
 
       {/* Tab nav + description */}
       <div style={{ ...centered, marginTop: "285px" }}>
-        {/* Fixed 265px when description present keeps content pinned at Figma y=1060px */}
-        <div
+        {/* Animated height: 265px with a description (pins content at Figma
+            y=1060), 76px without (tab nav 44 + 32 gap). Animating instead of
+            snapping prevents the content jump when switching to/from About. */}
+        <motion.div
+          animate={{ height: hasDescription ? 265 : 76 }}
+          transition={{ duration: reduce ? 0 : 0.45, ease: EASE }}
           style={{
             display: "flex",
             flexDirection: "column",
-            height: hasDescription ? "265px" : "auto",
+            overflow: "hidden",
           }}
         >
           <TabNav
@@ -101,7 +105,11 @@ export default function PortfolioPage() {
                 key={activeTab + "-desc"}
                 initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                exit={{
+                  opacity: 0,
+                  ...(reduce ? {} : { y: -6 }),
+                  transition: { duration: 0.3, ease: EASE },
+                }}
                 transition={{ duration: 0.9, delay: intro ? 2.2 : 0, ease: EASE }}
                 style={{ marginTop: "32px" }}
               >
@@ -109,18 +117,28 @@ export default function PortfolioPage() {
               </motion.div>
             </AnimatePresence>
           )}
-        </div>
+        </motion.div>
       </div>
 
-      {/* Tab content */}
-      <div style={{ ...centered, marginTop: hasDescription ? "0px" : "32px" }}>
+      {/* Tab content — gap to nav is baked into the animated block height above */}
+      <div style={{ ...centered, marginTop: "0px" }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
-            transition={{ duration: intro ? 1.6 : 0.55, delay: intro ? 2.4 : 0, ease: EASE }}
+            exit={{
+              opacity: 0,
+              ...(reduce ? {} : { y: -12 }),
+              transition: { duration: 0.3, ease: EASE },
+            }}
+            transition={{
+              duration: intro ? 1.6 : 0.55,
+              // Description leads, then content. About has no description, so its
+              // content (incl. the portrait) comes in immediately.
+              delay: intro ? 2.4 : hasDescription ? 0.3 : 0,
+              ease: EASE,
+            }}
           >
             {activeTab === "work" && <WorkContent />}
             {activeTab === "playground" && <PlaygroundContent />}

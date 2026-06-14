@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 export type Tab = "work" | "playground" | "ai" | "about";
@@ -29,15 +30,19 @@ export default function TabNav({
   showActiveStyle = true,
 }: TabNavProps) {
   const reduce = useReducedMotion();
+  const [hoveredTab, setHoveredTab] = useState<Tab | null>(null);
   return (
     <div className="flex items-center gap-4">
       {TABS.map((tab, i) => {
         const isActive = tab.id === active;
         const styledActive = isActive && showActiveStyle;
+        const isHovered = hoveredTab === tab.id;
         return (
           <motion.button
             key={tab.id}
             onClick={() => onChange(tab.id)}
+            onMouseEnter={() => setHoveredTab(tab.id)}
+            onMouseLeave={() => setHoveredTab(null)}
             initial={intro ? (reduce ? { opacity: 0 } : { opacity: 0, y: 8 }) : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: intro ? 0.9 + i * 0.15 : 0, ease: EASE }}
@@ -97,9 +102,9 @@ export default function TabNav({
                 style={{
                   gridArea: "1 / 1",
                   fontWeight: 400,
-                  color: "#696969",
+                  color: isHovered ? "#000" : "#696969",
                   opacity: styledActive ? 0 : 1,
-                  transition: "opacity 400ms ease",
+                  transition: "opacity 400ms ease, color 200ms ease",
                 }}
               >
                 {tab.label}
