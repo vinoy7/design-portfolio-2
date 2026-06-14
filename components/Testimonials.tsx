@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useReducedMotion } from "motion/react";
 import parasAryaPhoto    from "@/assets/about-me/testimonials/paras-arya.png";
 import kenRodriguesPhoto from "@/assets/about-me/testimonials/ken-rodrigues.png";
 import shivamDewanPhoto  from "@/assets/about-me/testimonials/shivam-dewan.png";
@@ -70,18 +71,35 @@ const TESTIMONIALS: Testimonial[] = [
 // Stack positions front → back
 const POSITIONS = [
   { r: 0,    s: 1,    z: 4 },
-  { r: -5.5, s: 0.97, z: 3 },
-  { r: 4.4,  s: 0.94, z: 2 },
-  { r: -2.3, s: 0.91, z: 1 },
+  { r: -7.5, s: 0.97, z: 3 },
+  { r: 6.4,  s: 0.94, z: 2 },
+  { r: -4.3, s: 0.91, z: 1 },
 ];
 
 const EASE = "cubic-bezier(0.23, 1, 0.32, 1)";
 
+// Entrance ("perpendicular drop") tuning. Cards fall along the view axis only —
+// start oversized + blurred + transparent (high above the surface, out of focus)
+// and settle to their resting fan transform, sharp and opaque, as they "land".
+let hasPlayed = false; // module-scoped: plays once per page load, survives tab remounts
+const CARD_W       = 600;                           // px, card width (matches markup)
+const START_BLUR   = 44;                            // px, start blur
+const FALL         = 1800;                          // ms, per-card fall duration
+const STAGGER      = 330;                           // ms, gap between cards (back lands first)
+const HEADING_LEAD = 720;                           // ms, head start for the heading
+const FALL_EASE    = "cubic-bezier(0.22, 1, 0.36, 1)";
+const FAR_SHADOW   = "0px 40px 80px 0px rgba(0,0,0,0.04)";   // diffuse, mid-fall
+const REST_SHADOW  = "0px 1.652px 33.037px 0px rgba(0,0,0,0.1)"; // matches card boxShadow
+
 export default function Testimonials() {
-  const stackRef  = useRef<HTMLDivElement>(null);
-  const cardRefs  = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
-  const orderRef  = useRef([0, 1, 2, 3]); // testimonial indices, front-first
-  const lockedRef = useRef(false);
+  const stackRef   = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLParagraphElement>(null);
+  const cardRefs   = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  // testimonial indices, front-first: Shivam, Ken, Paras, Francesco
+  const orderRef   = useRef([2, 1, 0, 3]);
+  const lockedRef  = useRef(false);
+  const reduce     = useReducedMotion();
 
   useEffect(() => {
     function applyStack(withTransition: boolean) {
@@ -129,10 +147,131 @@ export default function Testimonials() {
       }, 340);
     }
 
-    applyStack(false);
-
     const stackEl = stackRef.current;
     if (!stackEl) return;
+
+    // --- Entrance: "perpendicular drop" -----------------------------------
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let observer: IntersectionObserver | null = null;
+    let started = false;
+
+    // Start the cards at 2x the viewport width (way "up high", out of focus).
+    const startScale = (window.innerWidth * 2) / CARD_W;
+    // The oversized cards overflow the viewport while falling; clip horizontal
+    // overflow so no scrollbar flashes, then restore once settled.
+    const rootEl = document.documentElement;
+    const prevOverflowX = rootEl.style.overflowX;
+
+    // Pre-entrance: hold cards high above the surface — oversized, out of
+    // focus, transparent — and hide the heading.
+    function applyStart() {
+      const h = headingRef.current;
+      if (h) {
+        h.style.transition = "none";
+        h.style.opacity    = "0";
+        h.style.filter     = "blur(6px)";
+      }
+      orderRef.current.forEach((tIdx, stackPos) => {
+        const card = cardRefs.current[tIdx];
+        if (!card) return;
+        const pos = POSITIONS[stackPos];
+        card.style.transition  = "none";
+        card.style.transform   = [
+          "translateX(-50%)",
+          "translateY(-50%)",
+          `rotate(${pos.r}deg)`,
+          `scale(${startScale})`,
+        ].join(" ");
+        card.style.filter        = `blur(${START_BLUR}px)`;
+        card.style.opacity       = "0";
+        card.style.boxShadow     = FAR_SHADOW;
+        card.style.zIndex        = String(pos.z);
+        card.style.pointerEvents = "none";
+        card.style.cursor        = "default";
+      });
+    }
+
+    // Settled: normalize inline styles + hand control to the drag system.
+    function finishEntrance() {
+      hasPlayed = true;
+      lockedRef.current = false;
+      rootEl.style.overflowX = prevOverflowX;
+      applyStack(false);
+      orderRef.current.forEach((tIdx) => {
+        const card = cardRefs.current[tIdx];
+        if (card) card.style.filter = "blur(0px)";
+      });
+    }
+
+    // Heading sharpens in first, then cards fall back-to-front onto the stack.
+    function playEntrance() {
+      const h = headingRef.current;
+      if (h) {
+        h.style.transition = `opacity 1560ms ${FALL_EASE}, filter 1560ms ${FALL_EASE}`;
+        h.style.opacity    = "1";
+        h.style.filter     = "blur(0px)";
+      }
+      const last = POSITIONS.length - 1;
+      orderRef.current.forEach((tIdx, stackPos) => {
+        const card = cardRefs.current[tIdx];
+        if (!card) return;
+        const pos   = POSITIONS[stackPos];
+        // back card (stackPos = last) lands first, front (stackPos 0) last
+        const delay = HEADING_LEAD + (last - stackPos) * STAGGER;
+        timers.push(
+          setTimeout(() => {
+            card.style.transition =
+              `transform ${FALL}ms ${FALL_EASE}, filter ${FALL}ms ${FALL_EASE}, ` +
+              `opacity ${FALL}ms ${FALL_EASE}, box-shadow ${FALL}ms ${FALL_EASE}`;
+            card.style.transform = [
+              "translateX(-50%)",
+              "translateY(-50%)",
+              `rotate(${pos.r}deg)`,
+              `scale(${pos.s})`,
+            ].join(" ");
+            card.style.filter    = "blur(0px)";
+            card.style.opacity   = "1";
+            card.style.boxShadow = REST_SHADOW;
+          }, delay),
+        );
+      });
+      const total = HEADING_LEAD + last * STAGGER + FALL + 20;
+      timers.push(setTimeout(finishEntrance, total));
+    }
+
+    if (reduce || hasPlayed) {
+      // No drop: snap to rest, fully visible, drag enabled immediately.
+      applyStack(false);
+      const h = headingRef.current;
+      if (h) { h.style.opacity = "1"; h.style.filter = "blur(0px)"; }
+      orderRef.current.forEach((tIdx) => {
+        const card = cardRefs.current[tIdx];
+        if (!card) return;
+        card.style.filter    = "blur(0px)";
+        card.style.opacity   = "1";
+        card.style.boxShadow = REST_SHADOW;
+      });
+    } else {
+      lockedRef.current = true; // block drag/keyboard advance until landed
+      rootEl.style.overflowX = "hidden";
+      applyStart();
+      const wrap = wrapperRef.current;
+      if (wrap) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting && !started) {
+              started = true;
+              observer?.disconnect();
+              playEntrance();
+            }
+          },
+          { threshold: 0.5 },
+        );
+        observer.observe(wrap);
+      } else {
+        playEntrance();
+      }
+    }
 
     const drag = { active: false, startX: 0, startY: 0, startTime: 0, dx: 0, dy: 0 };
 
@@ -142,7 +281,9 @@ export default function Testimonials() {
       const pt = "touches" in e ? (e as TouchEvent).touches[0] : (e as MouseEvent);
       drag.dx  = pt.clientX - drag.startX;
       drag.dy  = pt.clientY - drag.startY;
-      const rot   = Math.max(-18, Math.min(18, drag.dx * 0.07));
+      // Tilt relative to the front card's resting rotation so grabbing it
+      // doesn't snap from POSITIONS[0].r to 0.
+      const rot   = POSITIONS[0].r + Math.max(-18, Math.min(18, drag.dx * 0.07));
       const front = cardRefs.current[orderRef.current[0]];
       if (front) {
         front.style.transform = [
@@ -170,7 +311,7 @@ export default function Testimonials() {
       if (dist < 28 && velocity < 0.3) {
         if (front) {
           front.style.transition = `transform 380ms ${EASE}`;
-          front.style.transform  = "translateX(-50%) translateY(-50%) rotate(0deg) scale(1)";
+          front.style.transform  = `translateX(-50%) translateY(-50%) rotate(${POSITIONS[0].r}deg) scale(1)`;
           front.style.cursor     = "grab";
         }
       } else {
@@ -213,16 +354,20 @@ export default function Testimonials() {
     stackEl.addEventListener("keydown",    onKeyDown);
 
     return () => {
+      observer?.disconnect();
+      timers.forEach(clearTimeout);
+      rootEl.style.overflowX = prevOverflowX;
       stackEl.removeEventListener("mousedown",  onDown as EventListener);
       stackEl.removeEventListener("touchstart", onDown as EventListener);
       stackEl.removeEventListener("keydown",    onKeyDown);
     };
-  }, []);
+  }, [reduce]);
 
   return (
-    <div className="flex flex-col items-center gap-16">
+    <div ref={wrapperRef} className="flex flex-col items-center gap-16">
       {/* Heading */}
       <p
+        ref={headingRef}
         style={{
           fontFamily:    "var(--font-averia)",
           fontWeight:    400,
