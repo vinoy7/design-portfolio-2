@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Hero from "./Hero";
 import TabNav, { type Tab } from "./TabNav";
 import WorkContent from "./content/WorkContent";
@@ -28,8 +28,8 @@ function TabDescription({ tab }: { tab: Tab }) {
       style={{
         fontFamily: "var(--font-dm-sans)",
         fontWeight: 400,
-        fontSize: "20px",
-        lineHeight: "30px",
+        fontSize: "18px",
+        lineHeight: "26px",
         letterSpacing: "-0.2px",
         color: "#757575",
       }}
@@ -39,12 +39,28 @@ function TabDescription({ tab }: { tab: Tab }) {
   );
 }
 
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState<Tab>("work");
+  // Initial-load choreography: hero -> tabs -> active pill -> content (slow).
+  // `intro` gates the staggered delays so only the first paint is sequenced;
+  // later tab switches animate at normal speed.
+  const [intro, setIntro] = useState(true);
+  // Active tab stays in default style until the pill fades in (synced to the
+  // pill's 2.0s delay in TabNav), then goes bold.
+  const [pillIn, setPillIn] = useState(false);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
+    const tPill = setTimeout(() => setPillIn(true), 2000);
+    const t = setTimeout(() => setIntro(false), 4300);
+    return () => {
+      clearTimeout(tPill);
+      clearTimeout(t);
+    };
   }, []);
 
   const showTestimonials = activeTab === "work";
@@ -73,15 +89,20 @@ export default function PortfolioPage() {
             height: hasDescription ? "265px" : "auto",
           }}
         >
-          <TabNav active={activeTab} onChange={setActiveTab} />
+          <TabNav
+            active={activeTab}
+            onChange={setActiveTab}
+            intro={intro}
+            showActiveStyle={!intro || pillIn}
+          />
           {hasDescription && (
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab + "-desc"}
-                initial={{ opacity: 0, y: 16 }}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                transition={{ duration: 0.9, delay: intro ? 2.2 : 0, ease: EASE }}
                 style={{ marginTop: "32px" }}
               >
                 <TabDescription tab={activeTab} />
@@ -96,10 +117,10 @@ export default function PortfolioPage() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 32 }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
+            transition={{ duration: intro ? 1.6 : 0.55, delay: intro ? 2.4 : 0, ease: EASE }}
           >
             {activeTab === "work" && <WorkContent />}
             {activeTab === "playground" && <PlaygroundContent />}

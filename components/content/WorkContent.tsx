@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 // import { useSquircle } from "@/components/hooks/useSquircle";
 import fusepayImg from "@/assets/work/fusepay-card-image.png";
 import connectImg from "@/assets/work/connectandsell-card-image.png";
@@ -185,6 +185,14 @@ const revealProps = (delay = 0) => ({
   transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 });
 
+// Horizontal reveal — cards slide in from their side (left/right).
+const revealX = (dir: "left" | "right", delay = 0, reduce = false) => ({
+  initial: reduce ? { opacity: 0 } : { opacity: 0, x: dir === "left" ? -56 : 56 },
+  whileInView: { opacity: 1, x: 0 },
+  viewport: { once: true, amount: 0.05 },
+  transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+});
+
 // const SQUIRCLE = { radius: 12, smoothing: 0.6 };
 const CARD_BORDER = "1px solid #e6e6e6";
 
@@ -193,6 +201,7 @@ export default function WorkContent() {
   const [hovered2, setHovered2] = useState(false);
   const [hovered3, setHovered3] = useState(false);
   const [hovered4, setHovered4] = useState(false);
+  const reduce = useReducedMotion() ?? false;
   // const card1Ref = useSquircle(SQUIRCLE);
   // const card2Ref = useSquircle(SQUIRCLE);
   // const card3Ref = useSquircle(SQUIRCLE);
@@ -325,10 +334,10 @@ export default function WorkContent() {
       </motion.a>
 
       {/* Cards 3 + 4: equal 2-col grid */}
-      <div className="flex gap-5">
-        {/* Card 3: Coditas OneView */}
+      <div className="flex gap-5" style={{ overflow: "hidden" }}>
+        {/* Card 3: Coditas OneView — slides in from left */}
         <motion.a
-          {...revealProps(0.15)}
+          {...revealX("left", 0.15, reduce)}
           href={CASE_STUDY_LINKS.coditas}
           target="_blank"
           rel="noopener noreferrer"
@@ -393,9 +402,9 @@ export default function WorkContent() {
           </div>
         </motion.a>
 
-        {/* Card 4: Weekday */}
+        {/* Card 4: Weekday — slides in from right */}
         <motion.a
-          {...revealProps(0.2)}
+          {...revealX("right", 0.2, reduce)}
           href={CASE_STUDY_LINKS.weekday}
           target="_blank"
           rel="noopener noreferrer"

@@ -1,12 +1,22 @@
+"use client";
+
 import Image from "next/image";
+import { motion, useReducedMotion } from "motion/react";
 import heroPhoto from "@/assets/about-me/hero-vinoy-photo.png";
 
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 export default function Hero() {
+  const reduce = useReducedMotion();
+
   return (
     <div className="relative w-full" style={{ height: "510px" }}>
       {/* Text block */}
-      <div
+      <motion.div
         className="absolute flex flex-col justify-between"
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.1, delay: 0, ease: EASE }}
         style={{
           left: "0",
           top: "265px",
@@ -45,11 +55,14 @@ export default function Hero() {
           experience. I strive to push the boundaries of design and create
           meaningful experiences for the users.
         </p>
-      </div>
+      </motion.div>
 
       {/* Hero photo */}
-      <div
+      <motion.div
         className="absolute overflow-hidden"
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.1, delay: 0.24, ease: EASE }}
         style={{
           left: "calc(50% + 10px)",
           top: "265px",
@@ -76,7 +89,7 @@ export default function Hero() {
             priority
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
