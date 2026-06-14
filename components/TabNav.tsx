@@ -10,7 +10,7 @@ const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const TABS: { id: Tab; label: string }[] = [
   { id: "work", label: "Work" },
   { id: "playground", label: "Playground" },
-  { id: "ai", label: "AI experiments" },
+  { id: "ai", label: "AI Experiments" },
   { id: "about", label: "About Me" },
 ];
 
@@ -31,6 +31,20 @@ export default function TabNav({
 }: TabNavProps) {
   const reduce = useReducedMotion();
   const [hoveredTab, setHoveredTab] = useState<Tab | null>(null);
+
+  // Magnetic pull: hovering an inactive tab tugs the active pill's facing edge
+  // out by distance: 1 away = 4px, 2 away = 8px, 3 away = 10px.
+  const PULL_BY_DIST = [0, 4, 8, 10];
+  const activeIdx = TABS.findIndex((t) => t.id === active);
+  const hoverIdx = hoveredTab ? TABS.findIndex((t) => t.id === hoveredTab) : -1;
+  let stretchLeft = 0;
+  let stretchRight = 0;
+  if (!reduce && hoverIdx >= 0 && hoverIdx !== activeIdx) {
+    const pull = PULL_BY_DIST[Math.abs(hoverIdx - activeIdx)];
+    if (hoverIdx > activeIdx) stretchRight = pull;
+    else stretchLeft = pull;
+  }
+
   return (
     <div className="flex items-center gap-4">
       {TABS.map((tab, i) => {
@@ -64,10 +78,12 @@ export default function TabNav({
               <motion.span
                 layoutId="tab-pill"
                 initial={intro ? { opacity: 0 } : false}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: 1, left: -stretchLeft, right: -stretchRight }}
                 transition={{
                   layout: { type: "spring", stiffness: 380, damping: 34 },
                   opacity: { duration: 0.8, delay: intro ? 2.0 : 0, ease: EASE },
+                  left: { type: "spring", stiffness: 420, damping: 32 },
+                  right: { type: "spring", stiffness: 420, damping: 32 },
                 }}
                 style={{
                   position: "absolute",
