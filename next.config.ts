@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      { source: "/designing-trust", destination: "/designing-trust/index.html" },
+    ];
+  },
 };
 
 export default nextConfig;

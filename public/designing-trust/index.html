@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; font-src 'self' https://*.fontshare.com https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'self';" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <title>Vinoy's Best Work</title>
+  <meta name="description" content="FuseCheq — a digital post-dated payment instrument. From decades-old paper cheques to efficient e-cheques. Case study by Vinoy Varghese." />
+
+  <!-- Favicon + app icons -->
+  <link rel="icon" type="image/png" href="/assets/meta/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/meta/apple-icon.png" />
+
+  <!-- Open Graph (WhatsApp, Slack, iMessage previews) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://vinoy.in/designing-trust" />
+  <meta property="og:title" content="Designing Trust — Vinoy Varghese" />
+  <meta property="og:description" content="FuseCheq — a digital post-dated payment instrument. From decades-old paper cheques to efficient e-cheques. Case study by Vinoy Varghese." />
+  <meta property="og:image" content="https://vinoy.in/assets/meta/social-preview.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+
+  <!-- Twitter card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Designing Trust — Vinoy Varghese" />
+  <meta name="twitter:description" content="FuseCheq — a digital post-dated payment instrument. From decades-old paper cheques to efficient e-cheques. Case study by Vinoy Varghese." />
+  <meta name="twitter:image" content="https://vinoy.in/assets/meta/social-preview.png" />
+
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Tokens ─────────────────────────────────────────────── */
+    :root {
+      --ink:        oklch(0.12 0.010 70);
+      --ink-soft:   #636363;
+      --canvas:     #ffffff;
+      --hover-fill: oklch(0.93 0.022 80);
+      --r-sm:       8px;
+      --ease-out:   cubic-bezier(0.23, 1, 0.32, 1);
+      --content-w:  864px;
+      --blue-box:   #e4f5ff;
+      --divider:    #e3e3e5;
+    }
+
+    /* ── Base ───────────────────────────────────────────────── */
+    html, body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--canvas);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    strong { font-weight: 650; }
+
+    /* ── Back button ────────────────────────────────────────── */
+    .back-btn {
+      position: fixed;
+      top: 40px;
+      left: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--ink);
+      text-decoration: none;
+      transition: background 160ms ease;
+      z-index: 200;
+      flex-shrink: 0;
+    }
+
+    .back-btn img {
+      display: block;
+    }
+
+    .back-btn:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 4px;
+    }
+
+    /* ── Back-to-top button ─────────────────────────────────── */
+    .top-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      border-radius: 16px;
+      background: #f0e7d8;
+      border: none;
+      cursor: pointer;
+      color: var(--ink);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: background 160ms ease, opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+    }
+
+    .top-btn.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .top-btn:hover { background: #ddcdb2; }
+    }
+
+    .top-btn:active { background: #ddcdb2; }
+
+    .top-btn:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 4px;
+    }
+
+    .top-btn img { display: block; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .back-btn:hover { background: #ddcdb2; }
+    }
+
+    .back-btn:active { background: #ddcdb2; }
+
+    /* ── Page ───────────────────────────────────────────────── */
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding-top: 40px;
+      padding-bottom: 80px;
+    }
+
+    /* ── Content column ─────────────────────────────────────── */
+    .cs-content {
+      width: min(var(--content-w), 94vw);
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* ── Title block ────────────────────────────────────────── */
+    .cs-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cs-title {
+      font-family: 'Averia Serif Libre', serif;
+      font-size: 40px;
+      font-weight: 400;
+      line-height: 48px;
+      color: var(--ink);
+    }
+
+    .cs-subtitle {
+      font-size: 28px;
+      font-weight: 400;
+      line-height: normal;
+      color: var(--ink-soft);
+    }
+
+    .cs-desc {
+      font-size: 20px;
+      font-weight: 400;
+      line-height: normal;
+      color: #636363;
+      margin-top: 12px;
+    }
+
+    /* ── Hero image ─────────────────────────────────────────── */
+    .cs-hero {
+      width: 100%;
+      height: 504px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f5f5f5;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .cs-hero__frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      opacity: 0;
+      transition: opacity 360ms cubic-bezier(0.23, 1, 0.32, 1);
+      will-change: opacity;
+    }
+
+    .cs-hero__frame.is-active {
+      opacity: 1;
+    }
+
+    /* ── Toggle pills ───────────────────────────────────────── */
+    .cs-toggle {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cs-toggle__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: 60px;
+      border: 1px solid #d9d9d9;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 20px;
+      color: #808080;
+      cursor: pointer;
+      transition: border-color 160ms ease, color 160ms ease, transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+      white-space: nowrap;
+    }
+
+    .cs-toggle__btn:active {
+      transform: scale(0.97);
+    }
+
+    .cs-toggle__btn.is-active {
+      border: 1.25px solid #000;
+      color: #000;
+      font-weight: 500;
+    }
+
+    /* ── Version content areas ──────────────────────────────── */
+    .cs-version {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: min(var(--content-w), 94vw);
+      height: 0;
+      overflow: hidden;
+      transition: opacity 200ms ease;
+    }
+
+    .cs-version.is-active {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* ── Version wrapper (holds height during transition) ───── */
+    .cs-versions {
+      position: relative;
+      width: 100%;
+      margin-top: -16px; /* cs-content gap is 40px; 40-16=24px toggle→content */
+    }
+
+    /* ── Section heading ────────────────────────────────────── */
+    .cs-section-heading {
+      font-size: 24px;
+      font-weight: 550;
+      line-height: normal;
+      letter-spacing: -0.02em;
+      color: #000;
+    }
+
+    /* ── Body text ──────────────────────────────────────────── */
+    .cs-body {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 26px;
+      letter-spacing: -0.01em;
+      color: var(--ink-soft);
+    }
+
+    .cs-body p + p {
+      margin-top: 1em;
+    }
+
+    .cs-body ul {
+      list-style: disc;
+      padding-left: 30px;
+      margin-top: 0.5em;
+    }
+
+    .cs-body ul li + li {
+      margin-top: 4px;
+    }
+
+    .cs-body ul + p {
+      margin-top: 1em;
+    }
+
+    /* ── Section block ──────────────────────────────────────── */
+    .cs-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Content group ──────────────────────────────────────── */
+    .cs-group {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .cs-group--wide {
+      gap: 32px;
+    }
+
+    /* ── Divider ────────────────────────────────────────────── */
+    .cs-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--divider);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ── Cheque / section image ─────────────────────────────── */
+    .cs-image {
+      width: 600px;
+      max-width: 100%;
+      height: 400px;
+      border-radius: 6px;
+      overflow: hidden;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .cs-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── Numbered point header ──────────────────────────────── */
+    .cs-point-header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .cs-point-list {
+      list-style: decimal;
+      padding-left: 30px;
+      width: 100%;
+      font-size: 20px;
+      font-weight: 500;
+      color: #000;
+      line-height: normal;
+    }
+
+    /* ── Blue quote box ─────────────────────────────────────── */
+    .cs-quote {
+      position: relative;
+      background: var(--blue-box);
+      padding: 12px 16px;
+      border-radius: 4px;
+      width: 844px;
+      max-width: 100%;
+      align-self: center;
+    }
+
+    .cs-quote p {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: normal;
+      color: #000;
+    }
+
+    .cs-quote__mark {
+      position: absolute;
+      width: 16px;
+      height: 12px;
+      pointer-events: none;
+      display: block;
+    }
+
+    .cs-quote__mark--open {
+      top: -6px;
+      left: -10px;
+    }
+
+    .cs-quote__mark--close {
+      bottom: -6px;
+      right: -10px;
+    }
+
+    /* ── Point block ────────────────────────────────────────── */
+    .cs-point {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ── Persona cards (Point 3) ────────────────────────────── */
+    .cs-persona-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+    .cs-persona-card {
+      background: #f9f7ff;
+      border-radius: 4px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+    .cs-persona-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M2 12 L2 2 L12 2' stroke='%23DFD4FF' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M2 2 L12 2 L12 12' stroke='%23DFD4FF' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M2 2 L2 12 L12 12' stroke='%23DFD4FF' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M12 2 L12 12 L2 12' stroke='%23DFD4FF' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-position: 0px 0px, calc(100% - 0px) 0px, 0px calc(100% - 0px), 100% 100%;
+      background-repeat: no-repeat;
+      background-size: 14px 14px;
+    }
+    .cs-persona-card__label {
+      font-size: 16px;
+      color: #636363;
+      margin: 0;
+    }
+    .cs-persona-card__quote {
+      font-size: 20px;
+      color: #0d0d0d;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* ── Full-width content image ───────────────────────────── */
+    .cs-img-full {
+      width: 100%;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .cs-img-full--clickable {
+      cursor: pointer;
+    }
+
+    .cs-img-full img {
+      width: 100%;
+      height: 518px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cs-img-caption {
+      font-size: 16px;
+      font-weight: 400;
+      font-style: italic;
+      color: #acacac;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ── Screenshot image (consent / failed payment) ────────── */
+    .cs-screenshot {
+      width: 100%;
+      height: auto;
+      background: #f5f5f5;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .cs-screenshot img {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 100%;
+      width: auto;
+      max-width: none;
+      display: block;
+      object-fit: contain;
+      object-position: top center;
+    }
+
+    /* ── Consent letter screenshot ──────────────────────────── */
+    .cs-screenshot--consent {
+      height: auto;
+    }
+    .cs-screenshot--consent img {
+      width: 100%;
+      height: auto;
+      transform: none;
+      left: auto;
+      position: relative;
+    }
+
+    .cs-screenshot--failed {
+      height: auto;
+    }
+    .cs-screenshot--failed img {
+      width: 100%;
+      height: auto;
+      transform: none;
+      left: auto;
+      position: relative;
+    }
+
+    /* ── Video placeholder ──────────────────────────────────── */
+    .cs-video-placeholder {
+      width: 100%;
+      height: 500px;
+      background: #f3f3f3;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cs-video-placeholder__inner {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cs-video-placeholder__icon {
+      width: 40px;
+      height: 40px;
+      opacity: 0.3;
+    }
+
+    .cs-video-placeholder__label {
+      font-size: 14px;
+      font-weight: 400;
+      color: #acacac;
+    }
+
+    /* ── Video thumbnail (play-to-overlay) ─────────────────── */
+    .cs-video-thumb {
+      width: 100%;
+      height: 500px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .cs-video-thumb__preview {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .cs-video-thumb__play {
+      position: relative;
+      z-index: 1;
+      width: 64px;
+      height: 64px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .cs-video-thumb:hover .cs-video-thumb__play {
+        background: rgba(0, 0, 0, 0.72);
+        transform: scale(1.08);
+      }
+    }
+
+    .cs-video-thumb:active .cs-video-thumb__play {
+      background: rgba(0, 0, 0, 0.72);
+      transform: scale(1.04);
+    }
+
+    /* ── Video lightbox ─────────────────────────────────────── */
+    .video-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .video-lightbox.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .video-lightbox__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      cursor: pointer;
+    }
+
+    .video-lightbox__wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      max-width: 75vw;
+    }
+
+    .video-lightbox__modal {
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      max-width: 75vw;
+      max-height: 75vh;
+    }
+
+    .video-lightbox__video {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 75vw;
+      max-height: 75vh;
+    }
+
+    .video-lightbox__close {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      cursor: pointer;
+      transition: background 120ms ease;
+      flex-shrink: 0;
+    }
+
+    .video-lightbox__close:hover { background: rgba(255, 255, 255, 0.28); }
+
+    /* ── Long version images ────────────────────────────────── */
+    .cs-long-img {
+      width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .cs-long-img img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ── Research section (long version) ────────────────────── */
+    .cs-research-block {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 24px;
+      background: #fafafa;
+      border-radius: 12px;
+      border: 1px solid var(--divider);
+    }
+
+    .cs-research-label {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #acacac;
+    }
+
+    /* ── Footer pill ────────────────────────────────────────── */
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 60px;
+      background: #f0e7d8;
+      border-radius: 16px;
+      padding: 30px 40px;
+      overflow: visible;
+      align-self: center;
+      margin-top: 80px;
+      margin-bottom: 80px;
+    }
+
+    .footer__icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      text-decoration: none;
+      transition: background 160ms ease;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .footer__icon-btn img {
+      width: 32px;
+      height: 32px;
+      display: block;
+    }
+
+    .footer__icon-btn:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 4px;
+    }
+
+    .footer__icon-btn:active { background: #ddcdb2; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .footer__icon-btn:hover { background: #ddcdb2; }
+      .footer__icon-btn:hover .tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* ── Tooltip ────────────────────────────────────────────── */
+    .tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #1e1e1f;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      padding: 8px 12px;
+      border-radius: 6px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 160ms ease, transform 160ms var(--ease-out);
+      z-index: 10;
+    }
+
+    /* ── Lightbox ───────────────────────────────────────────── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .lightbox.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      cursor: pointer;
+    }
+
+    .lightbox__wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      max-width: 75vw;
+    }
+
+    .lightbox__modal {
+      background: #fff;
+      border-radius: 6px;
+      max-width: 75vw;
+      max-height: 75vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lightbox__close {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      cursor: pointer;
+      transition: background 120ms ease;
+      flex-shrink: 0;
+    }
+
+    .lightbox__close:hover { background: rgba(255, 255, 255, 0.28); }
+
+    .lightbox__img {
+      display: block;
+      max-width: 75vw;
+      max-height: 75vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* ── Entrance animation initial states ──────────────────── */
+    .anim-header,
+    .anim-hero,
+    .anim-toggle,
+    .anim-footer {
+      opacity: 0;
+    }
+
+    /* ── Tablet (600–1024px) ────────────────────────────────── */
+    @media (min-width: 600px) and (max-width: 1024px) {
+      .cs-content {
+        width: min(517px, 94vw);
+        gap: 32px;
+      }
+
+      .cs-title    { font-size: 40px; }
+      .cs-subtitle { font-size: 24px; }
+      .cs-desc     { font-size: 18px; }
+
+      .cs-hero {
+        height: 305px;
+        border-radius: 6px;
+      }
+
+      .cs-body { font-size: 18px; }
+
+      .cs-quote p { font-size: 16px; }
+
+      .cs-img-full img { height: auto; max-height: 360px; object-fit: contain; }
+
+      .cs-screenshot { height: 360px; }
+      .cs-screenshot--consent { height: auto; }
+      .cs-screenshot--failed { height: auto; }
+
+      .cs-video-placeholder { height: 360px; }
+      .cs-video-thumb { height: 360px; }
+
+      .cs-research-img { height: 302px !important; }
+      .cs-persona-cards { grid-template-columns: 1fr; }
+      .cs-persona-card__label { font-size: 14px; }
+      .cs-persona-card__quote { font-size: 18px; }
+
+      .back-btn {
+        top: 28px;
+        left: 28px;
+      }
+
+      .footer__inner {
+        padding: 20px 30px;
+        gap: 40px;
+      }
+
+      .tooltip { display: none; }
+
+      .top-btn { padding: 12px; border-radius: 12px; right: 40px; bottom: 40px; }
+      .top-btn svg { width: 24px; height: 24px; }
+    }
+
+    /* ── Mobile (≤599px) ────────────────────────────────────── */
+    @media (max-width: 599px) {
+      .page {
+        padding-top: 40px;
+        padding-bottom: 104px;
+      }
+
+      .cs-content {
+        width: min(327px, calc(100vw - 48px));
+        gap: 28px;
+      }
+
+      .cs-version {
+        gap: 28px;
+      }
+
+      .cs-title    { font-size: 32px; line-height: 36px; }
+      .cs-subtitle { font-size: 20px; }
+      .cs-desc     { font-size: 16px; margin-top: 8px; }
+
+      .cs-hero {
+        height: 180px;
+        border-radius: 6px;
+      }
+
+      .cs-section-heading { font-size: 20px; }
+
+      .cs-body { font-size: 16px; }
+
+      .cs-quote p { font-size: 15px; }
+      .cs-quote { width: 100%; }
+
+      .cs-image { width: 100%; height: 220px; }
+
+      .cs-img-full img { height: auto; max-height: 240px; object-fit: contain; }
+
+      .cs-screenshot { height: 260px; border-radius: 6px; }
+      .cs-screenshot--consent { height: auto; }
+      .cs-screenshot--failed { height: auto; }
+
+      .cs-video-placeholder { height: 260px; border-radius: 6px; }
+      .cs-video-thumb { height: 260px; border-radius: 6px; }
+      .cs-video-thumb[data-video-src="/assets/designing-trust/payment-flow-web.mp4"] { height: 202px; }
+
+      .cs-research-img { height: 192px !important; }
+      .cs-persona-cards { grid-template-columns: 1fr; }
+      .cs-persona-card__label { font-size: 13px; }
+      .cs-persona-card__quote { font-size: 16px; }
+
+      #flow-diagram-trigger,
+      #flow-diagram-trigger-long {
+        pointer-events: none;
+        cursor: default;
+      }
+
+      #flow-diagram-trigger .cs-img-caption,
+      #flow-diagram-trigger-long .cs-img-caption {
+        display: none;
+      }
+
+      .cs-toggle__btn { font-size: 14px; padding: 8px 16px; }
+
+      .back-btn {
+        top: auto;
+        bottom: 20px;
+        left: 24px;
+        padding: 12px;
+        background: #ddcdb2;
+      }
+
+      .back-btn img { width: 24px; height: 24px; }
+
+      /* Footer — fixed bottom nav bar */
+      .footer__inner {
+        position: fixed;
+        bottom: 24px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: min(327px, calc(100vw - 48px));
+        padding: 16px 30px;
+        border-radius: 12px;
+        justify-content: space-between;
+        gap: 0;
+        overflow: hidden;
+        align-self: unset;
+        z-index: 100;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .footer__icon-btn img { width: 20px; height: 20px; }
+      .footer__icon-btn { padding: 4px; }
+      .tooltip { display: none; }
+
+      .top-btn { padding: 12px; border-radius: 12px; right: 16px; bottom: 20px; }
+      .top-btn svg { width: 24px; height: 24px; }
+    }
+
+    /* ── Reduced motion ─────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .anim-header, .anim-hero, .anim-toggle, .anim-footer,
+      .cs-version { opacity: 1 !important; transition: none !important; }
+    }
+
+    /* ── Research image ─────────────────────────────────────── */
+    .cs-research-img {
+      width: 100%;
+      height: 506px;
+      overflow: hidden;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .cs-research-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── Placeholder container ───────────────────────────────── */
+    .cs-placeholder {
+      width: 100%;
+      background: #f0f0f0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cs-placeholder__label {
+      font-size: 13px;
+      font-weight: 400;
+      color: #b8b8b8;
+      text-align: center;
+      padding: 8px 16px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Scroll-reveal animations ───────────────────────────── */
+    .scroll-anim {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 760ms cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .scroll-anim.is-revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-anim { opacity: 1; transform: none; transition: none; }
+      .cs-hero__frame { transition: opacity 160ms ease; }
+    }
+
+    /* ── Page exit fade ─────────────────────────────────────── */
+    body { transition: opacity 280ms ease; }
+    body.is-exiting { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      body { transition: none; }
+    }
+
+    /* ── Site logo (desktop + tablet only) ─────────────── */
+    .site-logo {
+      position: fixed;
+      top: 40px;
+      left: 40px;
+      z-index: 100;
+      display: block;
+      width: 40px;
+      height: 40px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .site-logo img { width: 40px; height: 40px; display: block; }
+    @media (max-width: 1024px) {
+      .site-logo { display: none; }
+    }
+    @media (max-width: 599px) {
+      .site-logo { display: none; }
+    }
+    @media (min-width: 1025px) {
+      .site-logo { display: none; }
+    }
+
+    /* ── Non-flow cs-img-full: base overflow for squircle fallback ── */
+    .cs-img-full:not(#flow-diagram-trigger):not(#flow-diagram-trigger-long) {
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    /* ── Flat media containers — no border radius (all breakpoints) ── */
+    .cs-hero,
+    .cs-image,
+    .cs-screenshot,
+    .cs-video-placeholder,
+    .cs-video-thumb,
+    .cs-long-img,
+    .cs-research-img,
+    .cs-placeholder,
+    .cs-img-full {
+      border-radius: 0 !important;
+    }
+  </style>
+</head>
+<body>
+
+
+  <a href="/" class="site-logo" aria-label="Home">
+    <img src="/assets/icons/Logo.svg" alt="Vinoy Varghese" width="40" height="40" />
+  </a>
+
+  <!-- Back button -->
+  <a class="back-btn" href="/" aria-label="Back to work">
+    <img src="/assets/icons/icon-back.svg" alt="" width="32" height="32" />
+  </a>
+
+  <!-- Back to top button -->
+  <button class="top-btn" id="top-btn" aria-label="Back to top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M16 24V8M8 16L16 8L24 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <main class="page">
+
+    <div class="cs-content">
+
+      <!-- ── Header ──────────────────────────────────────────── -->
+      <header class="cs-header anim-header">
+        <h1 class="cs-title">Designing Trust at Fusepay</h1>
+        <p class="cs-subtitle">From Decades-Old Paper Cheques to Efficient e-Cheques</p>
+        <div class="cs-divider" style="margin-top:16px; margin-bottom:4px;" aria-hidden="true"></div>
+        <p class="cs-desc">'FuseCheq' is a digital post-dated payment instrument designed to allow retailers to schedule future payments to wholesalers in a way that felt familiar to issuing a paper cheque, but with several improvements.</p>
+      </header>
+
+      <!-- ── Hero ────────────────────────────────────────────── -->
+      <div class="cs-hero anim-hero">
+        <img
+          id="hero-short"
+          class="cs-hero__frame is-active"
+          src="/assets/designing-trust/hero-composited.png"
+          alt="MacBook showing the FuseCheq payment scheduling interface alongside an iPhone showing the mobile app"
+          loading="eager"
+          decoding="async"
+        />
+        <img
+          id="hero-detailed"
+          class="cs-hero__frame"
+          src="/assets/designing-trust/hero-composited-detailed.png"
+          alt="MacBook and iPhone showing the FuseCheq payment type selection interface"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
+      <!-- ── Toggle ───────────────────────────────────────────── -->
+      <div class="cs-toggle anim-toggle" role="group" aria-label="Version toggle">
+        <button class="cs-toggle__btn is-active" data-version="short" aria-pressed="true">Short Version</button>
+        <button class="cs-toggle__btn" data-version="detailed" aria-pressed="false">Detailed Version</button>
+      </div>
+
+      <!-- ── Version wrapper ──────────────────────────────────── -->
+      <div class="cs-versions">
+
+        <!-- ════ SHORT VERSION ════════════════════════════════ -->
+        <div id="content-short" class="cs-version is-active">
+
+          <!-- The Problem -->
+          <div class="cs-group cs-group--wide scroll-anim">
+            <div class="cs-section">
+              <h2 class="cs-section-heading">The Problem</h2>
+              <div class="cs-body">
+                <p>In Seychelles, more than 80% of B2B transactions between retailers and wholesalers were still happening through cash and post-dated paper cheques. Many of these businesses processed over <strong>$7,000+</strong> in monthly transactions, while some wholesalers handled annual invoice volumes worth <strong>$3-25 million</strong> and retailers managed yearly inventory purchases between <strong>$500,000-1.5 million</strong>.</p>
+                <p>In a typical workflow, retailers issued cheques to delivery staff, wholesalers manually recorded and stored them, and finance teams deposited them at banks on the due date. If funds were insufficient, the cheque bounced, forcing wholesalers to retrieve it, contact the retailer, and coordinate repayment manually.</p>
+                <p>The process was slow, stressful, and heavily operational. Retailers worried about giving employees access to signed cheques, while wholesalers spent significant time tracking payments and visiting banks. Despite these inefficiencies, businesses still trusted cheques because they carried legal enforceability and acted as proof during payment disputes.</p>
+              </div>
+            </div>
+            <div class="cs-image">
+              <img
+                src="/assets/designing-trust/cheque-leaves.jpg"
+                alt="Stack of post-dated cheque leaves used in B2B transactions in Seychelles"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+
+          <div class="cs-divider scroll-anim" aria-hidden="true"></div>
+
+          <!-- So we introduced -->
+          <div class="cs-group">
+            <div class="cs-section scroll-anim">
+              <h2 class="cs-section-heading">The Solution</h2>
+              <div class="cs-body">
+                <p>They needed something that felt familiar, trustworthy, and legally serious enough to replace the cheque. That became the starting point for FuseCheq.</p>
+                <p><strong>FuseCheq</strong> became a digital post-dated payment instrument designed specifically for the way B2B payments work in Seychelles. It allowed retailers to schedule future payments to wholesalers in a way that felt familiar to issuing a paper cheque, but with several improvements.</p>
+                <p>The goal was not to make the product feel futuristic. The goal was to <strong>make it feel obvious</strong>.</p>
+              </div>
+            </div>
+
+            <!-- Points 1–6 -->
+            <div class="cs-group cs-group--wide">
+
+              <!-- Point 1 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="1">
+                    <li>Reducing Days of Operational Coordination to a Few Clicks</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>What once required physical movement, manual coordination, and repeated bank visits could now be completed digitally in a few clicks.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Before FuseCheq, post-dated cheque payments involved physical cheque handling, manual tracking, repeated bank visits, and repayment coordination for bounced transactions, creating significant operational overhead for both retailers and wholesalers.</p>
+                    <p>FuseCheq transformed this into a digital workflow where businesses could schedule payments, attach invoices, prioritize transactions, and track obligations in minutes, reducing days of manual coordination to just a few clicks.</p>
+                  </div>
+                  <div class="cs-img-full cs-img-full--clickable" role="button" tabindex="0" aria-label="Click to enlarge flow diagram" id="flow-diagram-trigger">
+                    <img
+                      src="/assets/designing-trust/flow-diagram.png"
+                      alt="Comparison diagram: The Old Way vs The Fuse-Way — showing reduction in bank visits, cheque collection time, and operational cost"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <p class="cs-img-caption">(Click to enlarge)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 2 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="2">
+                    <li>Daily Bank Visits Became Part of Running the Business</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Reduced the need for retailers and wholesalers to visit the bank from 5 days a week to 2 days a week.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-body">
+                  <p>Retailers could issue paper cheques for any date, forcing wholesalers to visit the bank almost every business day to deposit and process payments. This created one of the biggest operational inefficiencies in the existing workflow.</p>
+                  <p>Instead of replicating that behavior digitally, FuseCheq introduced fixed processing windows on Tuesdays and Fridays, reducing bank visits from five days a week to two predictable payment cycles. This made the workflow easier to plan, easier to manage, and significantly more operationally efficient for both retailers and wholesalers.</p>
+                </div>
+              </div>
+
+              <!-- Point 3 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="3">
+                    <li>Familiarity over modern fintech approach</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Do not force businesses to learn a completely new behaviour. Digitize the behaviour they already trust, then make it significantly better.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Users could choose between an Instant Transfer or a Post-dated FuseCheq and select a future payment date similar to issuing a traditional post-dated cheque. They could then select a vendor, enter the amount, choose an expense account, and upload invoices or supporting documents for reconciliation and AML compliance.</p>
+                    <p>Before scheduling the payment, users reviewed all transaction details, accepted a legally binding Guarantee Letter, and authorized the transaction using a PIN.</p>
+                  </div>
+                  <div class="cs-video-thumb" role="button" tabindex="0" aria-label="Play payment flow video" data-video-trigger data-video-src="/assets/designing-trust/payment-flow-mobile.mp4">
+                    <video
+                      class="cs-video-thumb__preview"
+                      src="/assets/designing-trust/payment-flow-mobile.mp4"
+                      muted
+                      playsinline
+                      preload="metadata"
+                      tabindex="-1"
+                      aria-hidden="true"
+                    ></video>
+                    <div class="cs-video-thumb__play">
+                      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M8 4l16 9-16 9V4z" fill="#fff"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 4 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="4">
+                    <li>The Trust Layer Behind Paper Cheques Was Missing Digitally</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Turned scheduled digital payments into enforceable financial commitments with a transparent &amp; legal Terms &amp; Consent Letter.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Whenever a retailer scheduled a FuseCheq payment, they digitally authorized a consent letter. Once the payment was scheduled, the retailer could not casually cancel it or change the date.</p>
+                    <p>This gave the wholesaler a sense of commitment similar to a paper cheque, but with a much better digital audit trail.</p>
+                  </div>
+                  <div class="cs-screenshot cs-screenshot--consent">
+                    <img
+                      src="/assets/designing-trust/consent-letter-screenshot.png"
+                      alt="Screenshot of the FuseCheq consent letter flow in the app"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 5 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="5">
+                    <li>Businesses couldn't control payment sequencing during low liquidity</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Enabled retailers to dynamically prioritize payments based on real-time business urgency.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>With paper cheques, banks processed payments in a fixed order, giving retailers no control over which cheque cleared first when balance was low. This created business risk, especially when important or urgent payments bounced.</p>
+                    <p>To solve this, we introduced a prioritization flow where retailers could <strong>drag and reorder FuseCheq payments</strong> within a processing day based on priority. This gave businesses direct control over cash flow sequencing and payment execution.</p>
+                    <p>It was not just a UX improvement. It was a business-critical feature.</p>
+                  </div>
+                  <div class="cs-video-thumb" role="button" tabindex="0" aria-label="Play drag and drop prioritization video" data-video-trigger data-video-src="/assets/designing-trust/drag-drop-mobile.mp4">
+                    <video
+                      class="cs-video-thumb__preview"
+                      src="/assets/designing-trust/drag-drop-mobile.mp4"
+                      muted
+                      playsinline
+                      preload="metadata"
+                      tabindex="-1"
+                      aria-hidden="true"
+                    ></video>
+                    <div class="cs-video-thumb__play">
+                      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M8 4l16 9-16 9V4z" fill="#fff"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 6 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="6">
+                    <li>Incentivizing wholesalers on failed scheduled payments</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Designed a balanced failed-payment system that not only reduced retailer penalties but also compensated wholesalers for operational inconvenience.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Banks often charged retailers around <strong>$35 to $70</strong> for bounced cheques, which could sometimes wipe out the profit margin on the transaction. To reduce this burden, <strong>FuseCheq lowered the failed payment fee to around $9</strong>, while also introducing a compensation model where most of the fee was credited to the wholesaler for the inconvenience caused.</p>
+                    <p>This created a more balanced system where retailers faced lower penalties, while wholesalers felt more comfortable accepting FuseCheq as a trusted digital alternative.</p>
+                  </div>
+                  <div class="cs-screenshot cs-screenshot--failed">
+                    <img
+                      src="/assets/designing-trust/failed-payment-screenshot.png"
+                      alt="Screenshot of the failed payment fee breakdown screen in FuseCheq"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /.cs-group (points) -->
+          </div><!-- /.cs-group (introduced) -->
+
+          <div class="cs-divider scroll-anim" aria-hidden="true"></div>
+
+          <!-- Since we launched -->
+          <div class="cs-section scroll-anim">
+            <h2 class="cs-section-heading">Since we launched…</h2>
+            <div class="cs-body">
+              <p>In November 2025, we launched the Fusepay B2B app in private beta, followed by a full public launch in April 2026. Since the beta launch, we have <strong>onboarded close to 30 businesses</strong> and processed <strong>over $200,000 in transaction volume</strong>.</p>
+              <p>The product is now live and actively processing new transactions every day. So far, all scheduled FuseCheq transactions have been successfully processed without failures or technical issues.</p>
+            </div>
+          </div>
+
+        </div><!-- /#content-short -->
+
+        <!-- ════ DETAILED VERSION ══════════════════════════════ -->
+        <div id="content-detailed" class="cs-version">
+
+          <!-- The Context -->
+          <div class="cs-section scroll-anim">
+            <h2 class="cs-section-heading">The Context</h2>
+            <div class="cs-body">
+              <p>When I first spoke to the co-founders of Fusepay in late 2024, one problem immediately stood out to me. Both founders came from family business backgrounds in Seychelles, with direct exposure to retail and wholesale operations. They had seen firsthand how businesses still relied heavily on cash and paper cheques to pay each other. What made the problem even more interesting was the scale and urgency behind it.</p>
+              <p>In Seychelles, more than 80% of B2B transactions between retailers and wholesalers were still happening through cash and post-dated paper cheques for payments. Many of these businesses <strong>processed over $7K+ in monthly transactions</strong>, yet their financial operations still relied on spreadsheets, physical bank visits, paper records, and manually coordinated cheque payments. Some <strong>wholesalers processed annual invoice volumes</strong> worth approximately <strong>$3 - 25 million</strong>, while many <strong>retailers managed yearly inventory purchases</strong> ranging between <strong>$500K - 1.5 million</strong>.</p>
+              <p>At the same time, government and banking stakeholders were moving toward phasing out paper cheques. That created a clear but difficult product challenge. Retailers and wholesalers needed an alternative. But not just any digital payment product. They needed something that felt familiar, trustworthy, and legally serious enough to replace the cheque. That became the starting point for FuseCheq.</p>
+            </div>
+          </div>
+
+          <!-- The Problem -->
+          <div class="cs-group scroll-anim">
+            <div class="cs-section">
+              <h2 class="cs-section-heading">The Problem</h2>
+              <div class="cs-body">
+                <p>A typical workflow looked like this -</p>
+                <ul>
+                  <li>A retailer would order goods from a wholesaler, often on post-dated payment terms. Since the shop owner was not always physically present, they would often leave a blank cheque book with an employee. The employee would fill in the cheque details, add the date, and hand it over to the wholesale delivery staff.</li>
+                  <li>The wholesale employee would then bring the cheque back to the office. The finance team would manually record it, track the due date, and store the cheque until it was ready to be deposited.</li>
+                  <li>On the due date, someone from the wholesale business would physically go to the bank, fill out a deposit slip, submit the cheque, and wait for the bank to process it.</li>
+                  <li>If the retailer had enough money in the account, the cheque would clear.<br>If not, the cheque would bounce due to insufficient funds. The wholesale employee would then need to collect the bounced cheque from the bank, bring it back to the office, update the records, call the retailer, request cash payment, physically collect the cash, and return the cheque.</li>
+                </ul>
+                <p>This process was expensive, slow, manual, and frustrating for both sides.</p>
+                <p>For retailers, it created a major control problem. Owners often had to trust employees with blank cheques because they could not be present in the shop all the time. That opened up serious risks around employee fraud and misuse.</p>
+                <p>For wholesalers, it created operational overhead. They had to send people to the bank almost every business day, manually track post-dated cheques, follow up on bounced payments, and handle unnecessary back-and-forth.</p>
+                <p>But despite all these problems, businesses still trusted cheques. The reason was simple. A paper cheque carried legal weight. If a retailer dishonored a cheque, the wholesaler had a document they could use as evidence and escalate legally.</p>
+                <p>That trust was missing from normal digital payment methods.</p>
+              </div>
+            </div>
+            <div class="cs-image">
+              <img
+                src="/assets/designing-trust/cheque-leaves-detailed.png"
+                alt="Stack of post-dated cheque leaves and invoices used in B2B transactions in Seychelles"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+
+          <!-- The Design Challenge -->
+          <div class="cs-group scroll-anim" style="gap: 16px;">
+            <div class="cs-section">
+              <h2 class="cs-section-heading">The Design Challenge</h2>
+              <div class="cs-body">
+                <p>The challenge was not simply to 'make cheques digital'. If the product felt too new or too abstract, adoption would be difficult.</p>
+                <p>We had to design something that -</p>
+                <ul>
+                  <li>Felt familiar to retailers and wholesalers.</li>
+                  <li>Gave wholesalers confidence that the payment commitment was serious.</li>
+                  <li>Gave retailers better control over payment scheduling.</li>
+                  <li>Reduced the need for daily bank visits.</li>
+                  <li>Created a clear authorization trail.</li>
+                  <li>Made failed payments cheaper and easier to manage.</li>
+                  <li>Helped both sides move to digital without feeling like they were changing their entire way of working.</li>
+                </ul>
+                <p>So the design principle became clear -</p>
+              </div>
+            </div>
+            <div class="cs-quote">
+              <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+              <p>Do not force businesses to learn a completely new behaviour. Digitize the behaviour they already trust, then make it significantly better.</p>
+              <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+            </div>
+          </div>
+
+          <!-- Research & Discovery -->
+          <div class="cs-group scroll-anim">
+            <div class="cs-section">
+              <h2 class="cs-section-heading">Research &amp; Discovery</h2>
+              <div class="cs-body">
+                <p>We spoke to both retailers and wholesalers because digitized post-dated payments had to work for both sides of the transaction.</p>
+                <p>The wholesaler needed to trust the instrument enough to accept it as a replacement for a paper cheque. The retailer needed to feel in control, because they were the ones issuing the payment and managing cash flow.</p>
+                <p>One of the biggest insights from the research was that wholesalers were not hesitant about digital payments because they disliked technology. They were hesitant because the existing digital alternatives in the market were not designed for operational B2B payments.</p>
+              </div>
+            </div>
+            <div class="cs-research-img">
+              <img
+                src="/assets/designing-trust/research-and-disc.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="cs-body">
+              <p>With internet banking or normal bank transfers, a payment could be delayed, forgotten, or cancelled. There was no strong digital equivalent of "this retailer has formally committed to pay me on this date."</p>
+            </div>
+          </div>
+
+          <div class="cs-divider scroll-anim" aria-hidden="true"></div>
+
+          <!-- So we introduced -->
+          <div class="cs-group cs-group--wide">
+            <div class="cs-section scroll-anim">
+              <h2 class="cs-section-heading">So we introduced…</h2>
+              <div class="cs-body">
+                <p><strong>FuseCheq</strong> became a digital post-dated payment instrument designed specifically for the way B2B payments work in Seychelles. It allowed retailers to schedule future payments to wholesalers in a way that felt familiar to issuing a paper cheque, but with several improvements.</p>
+              </div>
+            </div>
+
+            <!-- Points 1–6 detailed -->
+            <div class="cs-group cs-group--wide">
+
+              <!-- Point 1 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="1">
+                    <li>Reducing Days of Operational Coordination to a Few Clicks</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>What once required physical movement, manual coordination, and repeated bank visits could now be completed digitally in a few clicks.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Before FuseCheq, processing a post-dated cheque was not a simple payment action. It was a long operational workflow involving retailers, wholesale staff, finance teams, and banks. Once a retailer issued a paper cheque, the wholesaler had to physically transport it back to the office, manually record it, track the due date, store it securely, and later visit the bank to deposit it. If the cheque bounced due to insufficient funds, the process became even more expensive and time-consuming. Teams had to collect the bounced cheque, update records, contact the retailer, coordinate repayment, and often physically collect cash again.</p>
+                    <p>This entire workflow created unnecessary operational overhead for both sides of the transaction.</p>
+                    <p>FuseCheq transformed this into a digitally authorized payment workflow that could be completed in minutes. Retailers could schedule future payments, attach invoices, prioritize transactions, and track upcoming obligations directly from the product. Wholesalers no longer needed to manually collect, store, or deposit paper cheques. What previously required days of coordination, repeated bank visits, paperwork, and operational effort was reduced to a predictable digital workflow with near-zero operational movement and significantly lower processing costs.</p>
+                  </div>
+                  <div class="cs-img-full cs-img-full--clickable" role="button" tabindex="0" aria-label="Click to enlarge flow diagram" id="flow-diagram-trigger-long">
+                    <img
+                      src="/assets/designing-trust/flow-diagram.png"
+                      alt="Comparison diagram: The Old Way vs The Fuse-Way — showing reduction in bank visits, cheque collection time, and operational cost"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <p class="cs-img-caption">(Click to enlarge)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 2 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="2">
+                    <li>Daily Bank Visits Became Part of Running the Business</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Reduced the need for retailers and wholesalers to visit the bank from 5 days a week to 2 days a week.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-body">
+                  <p>One important behavior we discovered was that retailers could issue paper cheques for any date on the calendar. Because of this, wholesalers often had to visit the bank every business day to deposit cheques due on that day.</p>
+                  <p>This was one of the biggest operational inefficiencies in the system. Instead of copying that part of the paper cheque experience exactly, we redesigned it.</p>
+                  <p>In FuseCheq, e-cheques could only be issued for specific processing windows: Tuesdays and Fridays.</p>
+                  <p>This small design decision created a huge operational improvement. It helped retailers become more disciplined about when payments would be processed.</p>
+                  <p>More importantly, it reduced the need for retailers and wholesalers to visit the bank five days a week. Instead of checking and depositing cheques every business day, payment processing could now be structured around two predictable weekly cycles. That reduced bank visits from five days a week to two days a week. It also made the workflow easier to understand, easier to plan around, and easier to operationalize for both sides.</p>
+                </div>
+              </div>
+
+              <!-- Point 3 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="3">
+                    <li>Familiarity over modern fintech approach</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Do not force businesses to learn a completely new behaviour. Digitize the behaviour they already trust, then make it significantly better.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>The goal was not to make the product feel futuristic. The goal was to make it feel obvious.</p>
+                  </div>
+                  <div class="cs-persona-cards">
+                    <div class="cs-persona-card">
+                      <p class="cs-persona-card__label">A retailer should feel...</p>
+                      <p class="cs-persona-card__quote">"This works like the cheque I already understand, but gives me more control."</p>
+                    </div>
+                    <div class="cs-persona-card">
+                      <p class="cs-persona-card__label">A wholesaler should feel...</p>
+                      <p class="cs-persona-card__quote">"This gives me the same trust as a cheque, but saves my team a lot of time."</p>
+                    </div>
+                  </div>
+                  <div class="cs-body">
+                    <p><strong>The workflow begins</strong> when the user selects the "Pay Business" option and chooses between an Instant Transfer or a Post-dated FuseCheq. When the user selects the Post-dated FuseCheq option, they are presented with a date picker to choose the future execution date for the transaction, intentionally replicating the experience of issuing a traditional post-dated paper cheque.</p>
+                    <p><strong>In the next step</strong>, the user selects the vendor they want to pay, followed by the payment amount. One of the important product decisions in this flow was how transaction fees should be communicated.</p>
+                    <p>Initially, we charged 0.1% of the transaction amount to the sender and 0.3% to the receiver. However, during usability testing, users reacted negatively to percentage-based fees, especially for high-value transactions, because the fee amount appeared psychologically expensive when displayed as a percentage of large payments. Based on feedback from early users, we redesigned the pricing structure by introducing a flat transaction fee of SCR 5 for the sender, while the receiver fee remained at 0.3% with minimum and maximum fee caps. This made the cost feel significantly more predictable and acceptable to businesses.</p>
+                    <p>The user then selects the Fusepay account they want to pay from, allowing them to choose between different Expense accounts depending on available balance.</p>
+                    <p><strong>The third step focuses on</strong> payment documentation and reconciliation. Users can optionally add order numbers, invoice numbers, and upload supporting documents such as invoices, receipts, images, or PDFs related to the transaction. However, for payments of SCR 50,000 or more, document uploads become mandatory to comply with AML (Anti-Money Laundering) requirements.</p>
+                    <p><strong>In the final review step</strong>, users are presented with a complete summary of the transaction details before scheduling the payment. To proceed, they must accept the Letter of Legal Consent (Guarantee Letter), which acts as the legal binding behind the post-dated FuseCheq. Once accepted, the user completes PIN authorization to officially schedule the transaction.</p>
+                  </div>
+                  <div class="cs-video-thumb" role="button" tabindex="0" aria-label="Play payment flow video" data-video-trigger data-video-src="/assets/designing-trust/payment-flow-web.mp4">
+                    <video
+                      class="cs-video-thumb__preview"
+                      src="/assets/designing-trust/payment-flow-web.mp4"
+                      muted
+                      playsinline
+                      preload="metadata"
+                      tabindex="-1"
+                      aria-hidden="true"
+                    ></video>
+                    <div class="cs-video-thumb__play">
+                      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M8 4l16 9-16 9V4z" fill="#fff"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 4 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="4">
+                    <li>The Trust Layer Behind Paper Cheques Was Missing Digitally</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Turned scheduled digital payments into enforceable financial commitments with a transparent &amp; legal Terms &amp; Consent Letter.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Whenever a retailer scheduled a FuseCheq payment, they digitally authorized a consent letter. Once the payment was scheduled, the retailer could not casually cancel it or change the date. This gave the wholesaler a sense of commitment similar to a paper cheque, but with a much better digital audit trail.</p>
+                  </div>
+                  <div class="cs-img-full" style="background: #f5f5f5;">
+                    <img
+                      src="/assets/designing-trust/consent-letter-web.png"
+                      alt="Fusepay app showing the Review and Authorize screen with the legal consent letter acceptance"
+                      loading="lazy"
+                      decoding="async"
+                      style="width:100%; height:auto; display:block;"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 5 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="5">
+                    <li>Businesses couldn't control payment sequencing during low liquidity</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Enabled retailers to dynamically prioritize payments based on real-time business urgency.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Another important problem came up around cheque clearing.</p>
+                    <p>With paper cheques, if multiple cheques were due on the same day and the retailer had only enough balance to cover some of them, the bank would process them in an order the retailer could not control. That created real business risk.</p>
+                    <p>A retailer might have one cheque linked to a critical supplier they needed to restock from immediately. But if the bank processed another cheque first, the important cheque could bounce. The retailer had no control over which payment should pass first.</p>
+                    <p>So we designed a prioritization flow. If a retailer had multiple FuseCheq payments due on the same processing day, they could choose the order in which those payments should be processed.</p>
+                    <p>They could simply drag and drop payments based on business priority within a specific processing day. This gave retailers something they never had with paper cheques: control over cash flow sequencing.</p>
+                    <p>It was not just a UX improvement. It was a business-critical feature.</p>
+                  </div>
+                  <div class="cs-video-thumb" role="button" tabindex="0" aria-label="Play drag and drop prioritization video" data-video-trigger data-video-src="/assets/designing-trust/drag-drop-web.mp4">
+                    <video
+                      class="cs-video-thumb__preview"
+                      src="/assets/designing-trust/drag-drop-web.mp4"
+                      muted
+                      playsinline
+                      preload="metadata"
+                      tabindex="-1"
+                      aria-hidden="true"
+                    ></video>
+                    <div class="cs-video-thumb__play">
+                      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M8 4l16 9-16 9V4z" fill="#fff"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Point 6 -->
+              <div class="cs-point scroll-anim">
+                <div class="cs-point-header">
+                  <ol class="cs-point-list" start="6">
+                    <li>Incentivizing wholesalers on failed scheduled payments</li>
+                  </ol>
+                  <div class="cs-quote">
+                    <img class="cs-quote__mark cs-quote__mark--open" src="/assets/designing-trust/Open-apostrophe.svg" alt="" />
+                    <p>Designed a balanced failed-payment system that not only reduced retailer penalties but also compensated wholesalers for operational inconvenience.</p>
+                    <img class="cs-quote__mark cs-quote__mark--close" src="/assets/designing-trust/close-apostrophe.svg" alt="" />
+                  </div>
+                </div>
+                <div class="cs-group cs-group--wide">
+                  <div class="cs-body">
+                    <p>Paper cheque failures were also expensive.</p>
+                    <p>Banks often charged retailers SCR 500 to SCR 1,000 for a bounced cheque. In many cases, that fee could wipe out the entire profit margin of the goods purchased using that cheque. This made cheque failures painful and punitive for retailers.</p>
+                    <p>With FuseCheq, we significantly reduced the failed transaction fee to SCR 125. But we also wanted to make the product more attractive for wholesalers, because failed payments created inconvenience for them too.</p>
+                    <p>So we designed an incentive model. When a FuseCheq failed due to insufficient balance, SCR 125 was deducted from the retailer, and SCR 100 was passed to the wholesaler as compensation. This created a more balanced system.</p>
+                    <p>Retailers paid a much lower penalty compared to bank cheque return fees. Wholesalers received compensation for the inconvenience, which made them more comfortable accepting FuseCheq as a digital alternative.</p>
+                    <p>This was one of the key design decisions that made the product work for both sides of the transaction.</p>
+                  </div>
+                  <div class="cs-img-full" style="background: #f5f5f5;">
+                    <img
+                      src="/assets/designing-trust/failed-payment-web.png"
+                      alt="Fusepay dashboard showing an Overdue Credit entry from a failed FuseCheq payment"
+                      loading="lazy"
+                      decoding="async"
+                      style="width:100%; height:auto; display:block;"
+                    />
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /.cs-group (points) -->
+          </div><!-- /.cs-group (introduced) -->
+
+          <div class="cs-divider scroll-anim" aria-hidden="true"></div>
+
+          <!-- Since we launched -->
+          <div class="cs-section scroll-anim">
+            <h2 class="cs-section-heading">Since we launched…</h2>
+            <div class="cs-body">
+              <p>In November 2025, we launched the Fusepay B2B app in private beta, followed by a full public launch in April 2026. Since the beta launch, we have <strong>onboarded close to 30 businesses</strong> and processed <strong>over $200,000 in transaction volume</strong>.</p>
+              <p>The product is now live and actively processing new transactions every day. So far, all scheduled FuseCheq transactions have been successfully processed without failures or technical issues.</p>
+            </div>
+          </div>
+
+        </div><!-- /#content-detailed -->
+
+      </div><!-- /.cs-versions -->
+
+      <!-- ── Footer pill ─────────────────────────────────────── -->
+    </div><!-- /.cs-content -->
+  </main>
+
+  <!-- ── Video lightbox ───────────────────────────────────────── -->
+  <div id="video-lightbox" class="video-lightbox" role="dialog" aria-modal="true" aria-label="Payment flow video">
+    <div class="video-lightbox__backdrop" id="video-lightbox-backdrop"></div>
+    <div class="video-lightbox__wrap">
+      <button class="video-lightbox__close" id="video-lightbox-close" aria-label="Close">Close</button>
+      <div class="video-lightbox__modal">
+        <video
+          id="video-lightbox-player"
+          class="video-lightbox__video"
+          src="/assets/designing-trust/payment-flow-mobile.mp4"
+          muted
+          playsinline
+          preload="none"
+          controls
+          controlsList="nodownload"
+        ></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Lightbox (Detailed flow diagram) ──────────────────────── -->
+  <div id="lightbox-long" class="lightbox" role="dialog" aria-modal="true" aria-label="Detailed flow diagram enlarged view">
+    <div class="lightbox__backdrop" id="lightbox-long-backdrop"></div>
+    <div class="lightbox__wrap">
+      <button class="lightbox__close" id="lightbox-long-close" aria-label="Close">Close</button>
+      <div class="lightbox__modal">
+        <img
+          class="lightbox__img"
+          src="/assets/designing-trust/flow-diagram.png"
+          alt="Comparison diagram: The Old Way vs The Fuse-Way"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Lightbox ─────────────────────────────────────────────── -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Flow diagram enlarged view">
+    <div class="lightbox__backdrop" id="lightbox-backdrop"></div>
+    <div class="lightbox__wrap">
+      <button class="lightbox__close" id="lightbox-close" aria-label="Close">Close</button>
+      <div class="lightbox__modal">
+        <img
+          class="lightbox__img"
+          src="/assets/designing-trust/flow-diagram.png"
+          alt="Comparison diagram: The Old Way vs The Fuse-Way"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Scroll restoration ──────────────────────────────────────── */
+    (function () {
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+    })();
+
+    /* ── Version toggle ───────────────────────────────────────────
+       Fade between Short / Detailed content. Swaps active version
+       by toggling .is-active class; 200ms opacity transition in CSS.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      var toggleBtns   = document.querySelectorAll('.cs-toggle__btn');
+      var versions     = document.querySelectorAll('.cs-version');
+      var heroShort    = document.getElementById('hero-short');
+      var heroDetailed = document.getElementById('hero-detailed');
+      var reduced      = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var E            = 'cubic-bezier(0.23, 1, 0.32, 1)';
+
+      toggleBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = btn.dataset.version;
+
+          /* Update toggle button states */
+          toggleBtns.forEach(function (b) {
+            b.classList.toggle('is-active', b.dataset.version === target);
+            b.setAttribute('aria-pressed', b.dataset.version === target ? 'true' : 'false');
+          });
+
+          /* Crossfade hero images */
+          if (heroShort && heroDetailed) {
+            if (target === 'detailed') {
+              heroShort.classList.remove('is-active');
+              heroDetailed.classList.add('is-active');
+            } else {
+              heroDetailed.classList.remove('is-active');
+              heroShort.classList.add('is-active');
+            }
+          }
+
+          /* Switch version content with entrance animation */
+          versions.forEach(function (v) {
+            var isTarget = v.id === 'content-' + target;
+            v.classList.toggle('is-active', isTarget);
+          });
+
+          /* Animate incoming version content */
+          if (!reduced) {
+            var incoming = document.getElementById('content-' + target);
+            if (incoming) {
+              incoming.animate(
+                [{ opacity: 0, transform: 'translateY(10px)' },
+                 { opacity: 1, transform: 'translateY(0)' }],
+                { duration: 320, delay: 40, fill: 'backwards', easing: E }
+              );
+            }
+          }
+
+          /* Scroll back to toggle on switch */
+          document.querySelector('.cs-toggle').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      });
+    })();
+
+    /* ── Lightbox ─────────────────────────────────────────────────
+       Opens on flow-diagram click. Closes on backdrop click or
+       Close button. Traps focus while open.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      var lightbox  = document.getElementById('lightbox');
+      var backdrop  = document.getElementById('lightbox-backdrop');
+      var closeBtn  = document.getElementById('lightbox-close');
+      var trigger   = document.getElementById('flow-diagram-trigger');
+
+      function openLightbox() {
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      if (trigger) {
+        trigger.addEventListener('click', openLightbox);
+        trigger.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(); }
+        });
+      }
+
+      backdrop.addEventListener('click', closeLightbox);
+      closeBtn.addEventListener('click', closeLightbox);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+      });
+    })();
+
+    /* ── Lightbox (Detailed) ─────────────────────────────────────
+       Handles #flow-diagram-trigger-long → #lightbox-long.
+       Wired up but placeholder shown until long-flow-diagram asset ready.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      var lightbox = document.getElementById('lightbox-long');
+      var backdrop = document.getElementById('lightbox-long-backdrop');
+      var closeBtn = document.getElementById('lightbox-long-close');
+      var trigger  = document.getElementById('flow-diagram-trigger-long');
+
+      if (!lightbox) return;
+
+      function openLightbox() {
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      if (trigger) {
+        trigger.addEventListener('click', openLightbox);
+        trigger.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(); }
+        });
+      }
+
+      if (backdrop) backdrop.addEventListener('click', closeLightbox);
+      if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+      });
+    })();
+
+    /* ── Entrance animations ──────────────────────────────────────
+       Header → Hero → Toggle → Footer, staggered WAAPI reveal.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var E = 'cubic-bezier(0.16, 1, 0.3, 1)';
+
+      function anim(el, from, to, dur, delay) {
+        if (!el) return;
+        el.animate([from, to], { duration: dur, delay: delay, fill: 'both', easing: E });
+      }
+
+      function run() {
+        window.__introStartMs = Date.now();
+        anim(document.querySelector('.anim-header'),
+          { opacity: 0, transform: 'translateY(24px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+          760, 0
+        );
+        anim(document.querySelector('.anim-hero'),
+          { opacity: 0, transform: 'translateY(28px) scale(0.985)' },
+          { opacity: 1, transform: 'translateY(0) scale(1)' },
+          900, 180
+        );
+        anim(document.querySelector('.anim-toggle'),
+          { opacity: 0, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+          760, 360
+        );
+        anim(document.querySelector('.anim-footer'),
+          { opacity: 0, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+          760, 480
+        );
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+      } else {
+        run();
+      }
+    })();
+
+    /* ── Page exit fade ──────────────────────────────────────────
+       Internal same-tab links fade the page out before navigating.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      var DUR = 280;
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      window.addEventListener('pageshow', function () {
+        document.body.classList.remove('is-exiting');
+      });
+
+      document.querySelectorAll('a[href]').forEach(function (a) {
+        var href = a.getAttribute('href');
+        if (!href || href.charAt(0) === '#' || a.target === '_blank' ||
+            href.indexOf('mailto:') === 0 || href.indexOf('http') === 0) return;
+
+        a.addEventListener('click', function (e) {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+          e.preventDefault();
+          if (reduce) { window.location.href = href; return; }
+          document.body.classList.add('is-exiting');
+          setTimeout(function () { window.location.href = href; }, DUR);
+        });
+      });
+    })();
+
+    /* ── Scroll-reveal ───────────────────────────────────────────
+       Observe .scroll-anim elements; reveal on viewport entry.
+       Stagger siblings with data-stagger index.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!('IntersectionObserver' in window)) return;
+
+      var INTRO_DUR = 1300;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var el = entry.target;
+          var elapsed = window.__introStartMs ? Date.now() - window.__introStartMs : INTRO_DUR;
+          var baseDelay = Math.max(0, INTRO_DUR - elapsed);
+          var delay = baseDelay + parseInt(el.dataset.revealDelay || '0', 10);
+          setTimeout(function () {
+            el.classList.add('is-revealed');
+          }, delay);
+          observer.unobserve(el);
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.scroll-anim').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
+
+    /* ── Video thumbnail first-frame ────────────────────────────
+       Seek to 0.01s after metadata loads to force first frame render.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      document.querySelectorAll('.cs-video-thumb__preview').forEach(function (v) {
+        v.addEventListener('loadedmetadata', function () {
+          v.currentTime = 0.01;
+        });
+      });
+    })();
+
+    /* ── Video lightbox ──────────────────────────────────────────
+       Play button thumbnail → modal overlay, video autoplays.
+       Both Point-3 triggers share one lightbox + one player.
+    ─────────────────────────────────────────────────────────────── */
+    (function () {
+      var lightbox = document.getElementById('video-lightbox');
+      var backdrop = document.getElementById('video-lightbox-backdrop');
+      var closeBtn = document.getElementById('video-lightbox-close');
+      var player   = document.getElementById('video-lightbox-player');
+      var triggers = document.querySelectorAll('[data-video-trigger]');
+
+      function openVideoLightbox(src) {
+        if (player.getAttribute('src') !== src) {
+          player.pause();
+          player.setAttribute('src', src);
+          player.load();
+        }
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        player.currentTime = 0;
+        player.play();
+        closeBtn.focus();
+      }
+
+      function closeVideoLightbox() {
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+        player.pause();
+        player.currentTime = 0;
+      }
+
+      triggers.forEach(function (trigger) {
+        var src = trigger.dataset.videoSrc;
+        trigger.addEventListener('click', function () { openVideoLightbox(src); });
+        trigger.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVideoLightbox(src); }
+        });
+      });
+
+      backdrop.addEventListener('click', closeVideoLightbox);
+      closeBtn.addEventListener('click', closeVideoLightbox);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeVideoLightbox();
+      });
+    })();
+
+    /* ── Mobile/tablet email: mailto → Gmail fallback ─────────── */
+    (function () {
+      var emailBtn = document.querySelector('.footer__icon-btn[aria-label="Email"]');
+      if (!emailBtn) return;
+      var GMAIL  = 'https://mail.google.com/mail/?view=cm&fs=1&to=vinoy.248@gmail.com';
+      var MAILTO = 'mailto:vinoy.248@gmail.com';
+
+      emailBtn.addEventListener('click', function (e) {
+        if (!window.matchMedia('(max-width: 1024px)').matches) return;
+        e.preventDefault();
+        var opened = false;
+        var onBlur = function () { opened = true; clearTimeout(timer); };
+        window.addEventListener('blur', onBlur, { once: true });
+        var timer = setTimeout(function () {
+          if (!opened) window.open(GMAIL, '_blank');
+          window.removeEventListener('blur', onBlur);
+        }, 600);
+        window.location.href = MAILTO;
+      });
+    })();
+
+    // ── Back to top button ─────────────────────────────────────
+    (function () {
+      var topBtn = document.getElementById('top-btn');
+      var header = document.querySelector('.cs-header');
+      if (!topBtn || !header) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        var visible = entries[0].isIntersecting;
+        topBtn.classList.toggle('is-visible', !visible);
+      }, { threshold: 0 });
+
+      observer.observe(header);
+    })();
+  </script>
+
+
+  <script src="/assets/js/rotate-lock.js" defer></script>
+  <script type="module" src="/assets/js/squircle.js"></script>
+</body>
+</html>

@@ -107,12 +107,10 @@ function CardSubtitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ViewCaseStudy({ hovered, href }: { hovered: boolean; href?: string }) {
-  const Wrapper = href ? "a" : "div";
+function ViewCaseStudy({ hovered }: { hovered: boolean }) {
   return (
-    <Wrapper
-      {...(href ? { href, target: "_blank", rel: "noopener noreferrer" } : {})}
-      style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", textDecoration: "none", width: "fit-content" }}
+    <div
+      style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", width: "fit-content" }}
     >
       <p
         style={{
@@ -166,11 +164,12 @@ function ViewCaseStudy({ hovered, href }: { hovered: boolean; href?: string }) {
           />
         </svg>
       </div>
-    </Wrapper>
+    </div>
   );
 }
 
 const CASE_STUDY_LINKS = {
+  fusepay: "/designing-trust",
   connectAndSell:
     "https://smoggy-oil-957.notion.site/Creating-an-AI-agent-to-handle-objections-in-a-Sales-tech-software-04b5af75b6a5495a9eb1dc0c5f42a715",
   coditas:
@@ -202,11 +201,13 @@ export default function WorkContent() {
   return (
     <div className="flex flex-col gap-5">
       {/* Card 1: Fusepay — image left, text right */}
-      <motion.div
+      <motion.a
         {...revealProps(0)}
-        // ref={card1Ref}
+        href={CASE_STUDY_LINKS.fusepay}
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex overflow-hidden"
-        style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+        style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER, textDecoration: "none", color: "inherit" }}
         onMouseEnter={() => setHovered1(true)}
         onMouseLeave={() => setHovered1(false)}
       >
@@ -268,14 +269,16 @@ export default function WorkContent() {
             </span>
           </div>
         </div>
-      </motion.div>
+      </motion.a>
 
       {/* Card 2: ConnectAndSell — text left, image right */}
-      <motion.div
+      <motion.a
         {...revealProps(0.1)}
-        // ref={card2Ref}
+        href={CASE_STUDY_LINKS.connectAndSell}
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex overflow-hidden"
-        style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+        style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER, textDecoration: "none", color: "inherit" }}
         onMouseEnter={() => setHovered2(true)}
         onMouseLeave={() => setHovered2(false)}
       >
@@ -304,7 +307,7 @@ export default function WorkContent() {
               </CardSubtitle>
             </div>
           </div>
-          <ViewCaseStudy hovered={hovered2} href={CASE_STUDY_LINKS.connectAndSell} />
+          <ViewCaseStudy hovered={hovered2} />
         </div>
 
         {/* Image */}
@@ -319,16 +322,18 @@ export default function WorkContent() {
             className="object-cover"
           />
         </div>
-      </motion.div>
+      </motion.a>
 
       {/* Cards 3 + 4: equal 2-col grid */}
       <div className="flex gap-5">
         {/* Card 3: Coditas OneView */}
-        <motion.div
+        <motion.a
           {...revealProps(0.15)}
-          // ref={card3Ref}
+          href={CASE_STUDY_LINKS.coditas}
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex flex-col flex-1 overflow-hidden"
-          style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+          style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER, textDecoration: "none", color: "inherit" }}
           onMouseEnter={() => setHovered3(true)}
           onMouseLeave={() => setHovered3(false)}
         >
@@ -383,17 +388,19 @@ export default function WorkContent() {
               </div>
             </div>
             <div style={{ marginTop: "120px" }}>
-              <ViewCaseStudy hovered={hovered3} href={CASE_STUDY_LINKS.coditas} />
+              <ViewCaseStudy hovered={hovered3} />
             </div>
           </div>
-        </motion.div>
+        </motion.a>
 
         {/* Card 4: Weekday */}
-        <motion.div
+        <motion.a
           {...revealProps(0.2)}
-          // ref={card4Ref}
+          href={CASE_STUDY_LINKS.weekday}
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex flex-col flex-1 overflow-hidden"
-          style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER }}
+          style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER, textDecoration: "none", color: "inherit" }}
           onMouseEnter={() => setHovered4(true)}
           onMouseLeave={() => setHovered4(false)}
         >
@@ -443,10 +450,10 @@ export default function WorkContent() {
               </div>
             </div>
             <div style={{ marginTop: "120px" }}>
-              <ViewCaseStudy hovered={hovered4} href={CASE_STUDY_LINKS.weekday} />
+              <ViewCaseStudy hovered={hovered4} />
             </div>
           </div>
-        </motion.div>
+        </motion.a>
       </div>
     </div>
   );
