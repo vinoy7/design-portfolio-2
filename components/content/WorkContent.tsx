@@ -107,10 +107,12 @@ function CardSubtitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ViewCaseStudy({ hovered }: { hovered: boolean }) {
+function ViewCaseStudy({ hovered, href }: { hovered: boolean; href?: string }) {
+  const Wrapper = href ? "a" : "div";
   return (
-    <div
-      style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}
+    <Wrapper
+      {...(href ? { href, target: "_blank", rel: "noopener noreferrer" } : {})}
+      style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", textDecoration: "none", width: "fit-content" }}
     >
       <p
         style={{
@@ -164,9 +166,18 @@ function ViewCaseStudy({ hovered }: { hovered: boolean }) {
           />
         </svg>
       </div>
-    </div>
+    </Wrapper>
   );
 }
+
+const CASE_STUDY_LINKS = {
+  connectAndSell:
+    "https://smoggy-oil-957.notion.site/Creating-an-AI-agent-to-handle-objections-in-a-Sales-tech-software-04b5af75b6a5495a9eb1dc0c5f42a715",
+  coditas:
+    "https://smoggy-oil-957.notion.site/Creating-Coditas-Internal-L-D-department-product-0609fb2f05ee45eab4a4c867ff5df066",
+  weekday:
+    "https://smoggy-oil-957.notion.site/Revamping-Interface-for-a-niche-job-recruitment-platform-4807e014f5aa49ce8c39dc004a6e361b",
+};
 
 const revealProps = (delay = 0) => ({
   initial: { opacity: 0, y: 56 },
@@ -293,7 +304,7 @@ export default function WorkContent() {
               </CardSubtitle>
             </div>
           </div>
-          <ViewCaseStudy hovered={hovered2} />
+          <ViewCaseStudy hovered={hovered2} href={CASE_STUDY_LINKS.connectAndSell} />
         </div>
 
         {/* Image */}
@@ -372,7 +383,7 @@ export default function WorkContent() {
               </div>
             </div>
             <div style={{ marginTop: "120px" }}>
-              <ViewCaseStudy hovered={hovered3} />
+              <ViewCaseStudy hovered={hovered3} href={CASE_STUDY_LINKS.coditas} />
             </div>
           </div>
         </motion.div>
@@ -432,7 +443,7 @@ export default function WorkContent() {
               </div>
             </div>
             <div style={{ marginTop: "120px" }}>
-              <ViewCaseStudy hovered={hovered4} />
+              <ViewCaseStudy hovered={hovered4} href={CASE_STUDY_LINKS.weekday} />
             </div>
           </div>
         </motion.div>
