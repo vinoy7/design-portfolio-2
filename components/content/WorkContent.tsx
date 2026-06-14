@@ -169,7 +169,8 @@ function ViewCaseStudy({ hovered }: { hovered: boolean }) {
 }
 
 const CASE_STUDY_LINKS = {
-  fusepay: "/designing-trust",
+  // Relative so it resolves under the GH Pages basePath (/design-portfolio-2/).
+  fusepay: "designing-trust/",
   connectAndSell:
     "https://smoggy-oil-957.notion.site/Creating-an-AI-agent-to-handle-objections-in-a-Sales-tech-software-04b5af75b6a5495a9eb1dc0c5f42a715",
   coditas:
