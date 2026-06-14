@@ -14,8 +14,12 @@ import row09 from "@/assets/playground/row-09.png";
 import row10 from "@/assets/playground/row-10.png";
 import row11 from "@/assets/playground/row-11.png";
 import row12 from "@/assets/playground/row-12.png";
+import row13 from "@/assets/playground/row-13.png";
 
-const rows = [row01, row02, row03, row04, row05, row06, row07, row08, row09, row10, row11, row12];
+// Order matches Figma node 6386:141163 (top→bottom). row-13 = new Fusepay
+// Settings/General mobile screens; Weekday table (row-08) now precedes the
+// FuseCard-activation (row-06) and Approval (row-07) phone rows.
+const rows = [row01, row02, row03, row04, row05, row08, row06, row07, row09, row13, row10, row11, row12];
 
 const revealProps = (delay = 0) => ({
   initial: { opacity: 0, y: 56 },
