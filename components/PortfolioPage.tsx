@@ -99,7 +99,7 @@ export default function PortfolioPage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            overflow: "hidden",
+            overflow: "visible",
           }}
         >
           <TabNav
