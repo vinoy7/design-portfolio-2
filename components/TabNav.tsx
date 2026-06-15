@@ -23,6 +23,8 @@ const POP_AT = 10; // 10th rapid click pops the pill off
 const FLOOR_MARGIN = 0; // rest flush against the very bottom of the window
 const MAGNET_THRESHOLD = 130; // center-to-center px to dock home
 const LAUNCH_VY = -14; // upward kick on pop-off (matter px/step)
+const HOME_LERP = 0.12; // homing glide rate per frame (lower = slower dock)
+const HOME_ANGLE_DECAY = 0.86; // per-frame angle decay while homing (higher = slower upright)
 
 interface TabNavProps {
   active: Tab;
@@ -301,6 +303,12 @@ export default function TabNav({
     releaseDrag();
     homeTargetRef.current = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     homeSizeRef.current = { w: r.width, h: r.height };
+    // Make the body kinematic for the glide: a dynamic body keeps taking a
+    // gravity nudge each Engine.update *before* the lerp runs, so it rests a
+    // couple px below target and the dock threshold never trips. Static = the
+    // lerp fully owns the position → it converges exactly, regardless of rate.
+    const body = bodyRef.current;
+    if (body) Matter.Body.setStatic(body, true);
     homingRef.current = true;
   };
 
@@ -405,6 +413,9 @@ export default function TabNav({
     homingRef.current = false;
     magnetEngagedRef.current = false;
     draggingRef.current = true;
+    // Re-grab during a homing glide: restore dynamics so gravity + the drag
+    // constraint act on it again (engageHomeTo had frozen it static).
+    if (body.isStatic) Matter.Body.setStatic(body, false);
     const pointer = { x: e.clientX, y: e.clientY };
     // Pin the GRABBED point of the body to the cursor. Gravity then torques the
     // rest of the pill around that point — hold the left edge, the right droops.
@@ -508,17 +519,17 @@ export default function TabNav({
         const t = homeTargetRef.current;
         const p = body.position;
         Matter.Body.setPosition(body, {
-          x: p.x + (t.x - p.x) * 0.28,
-          y: p.y + (t.y - p.y) * 0.28,
+          x: p.x + (t.x - p.x) * HOME_LERP,
+          y: p.y + (t.y - p.y) * HOME_LERP,
         });
-        Matter.Body.setAngle(body, body.angle * 0.7);
+        Matter.Body.setAngle(body, body.angle * HOME_ANGLE_DECAY);
         Matter.Body.setVelocity(body, { x: 0, y: 0 });
         Matter.Body.setAngularVelocity(body, 0);
         const s = sizeRef.current;
         const ts = homeSizeRef.current;
         sizeRef.current = {
-          w: s.w + (ts.w - s.w) * 0.28,
-          h: s.h + (ts.h - s.h) * 0.28,
+          w: s.w + (ts.w - s.w) * HOME_LERP,
+          h: s.h + (ts.h - s.h) * HOME_LERP,
         };
         if (
           Math.hypot(t.x - body.position.x, t.y - body.position.y) < 1.4 &&
