@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
 import Matter from "matter-js";
+import { pill } from "./pillTracker";
 
 export type Tab = "work" | "playground" | "ai" | "about";
 
@@ -230,6 +231,8 @@ export default function TabNav({
     const { w, h } = sizeRef.current;
     el.style.width = `${w}px`;
     el.style.height = `${h}px`;
+    // publish live position so HeroDots can repel its dots as the pill passes
+    Object.assign(pill, { x: body.position.x, y: body.position.y, r: Math.max(w, h) / 2 });
     const sc = draggingRef.current ? 1.05 : 1;
     // translate3d + rotate keep this on the GPU compositor (Emil: animate only
     // transform/opacity). Centering uses the live size so the pill stays pinned
@@ -480,6 +483,7 @@ export default function TabNav({
       chamfer: { radius: h / 2 },
     });
     bodyRef.current = body;
+    Object.assign(pill, { active: true });
     /* eslint-disable react-hooks/purity -- runs in effect (post-render), and a
        little launch randomness is intentional */
     Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 5, y: LAUNCH_VY });
@@ -566,6 +570,7 @@ export default function TabNav({
 
     return () => {
       alive = false;
+      Object.assign(pill, { active: false });
       window.removeEventListener("resize", onResize);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = 0;
