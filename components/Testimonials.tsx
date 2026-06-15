@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useRef } from "react";
+import { useReducedMotion, useScroll, useMotionValueEvent } from "motion/react";
 import parasAryaPhoto    from "@/assets/about-me/testimonials/paras-arya.png";
 import kenRodriguesPhoto from "@/assets/about-me/testimonials/ken-rodrigues.png";
 import shivamDewanPhoto  from "@/assets/about-me/testimonials/shivam-dewan.png";
@@ -78,50 +78,168 @@ const POSITIONS = [
 
 const EASE = "cubic-bezier(0.23, 1, 0.32, 1)";
 
-// Entrance ("perpendicular drop") tuning. Cards fall along the view axis only —
-// start oversized + blurred + transparent (high above the surface, out of focus)
-// and settle to their resting fan transform, sharp and opaque, as they "land".
-let hasPlayed = false; // module-scoped: plays once per page load, survives tab remounts
-const CARD_W       = 600;                           // px, card width (matches markup)
-const START_BLUR   = 44;                            // px, start blur
-const FALL         = 1800;                          // ms, per-card fall duration
-const STAGGER      = 330;                           // ms, gap between cards (back lands first)
-const HEADING_LEAD = 720;                           // ms, head start for the heading
-const FALL_EASE    = "cubic-bezier(0.22, 1, 0.36, 1)";
-const FAR_SHADOW   = "0px 40px 80px 0px rgba(0,0,0,0.04)";   // diffuse, mid-fall
+// Entrance ("perpendicular drop") — now scroll-scrubbed inside a pinned section.
+// Cards fall along the view axis: start oversized + blurred + transparent (high
+// above the surface, out of focus) and settle to their resting fan as the scroll
+// wheel drives progress 0→1. Plays once per page load (survives tab remounts).
+let hasPlayed = false;                              // module-scoped: persists across remounts
+const CARD_W           = 600;                       // px, card width (matches markup)
+const START_BLUR_SCRUB = 24;                        // px, start blur (lower than one-shot for per-frame cost)
+const DROP_VH          = 100;                        // extra track height beyond 100vh → ~1 screen of scrub
+const LAND_END         = 0.85;                       // front card fully landed at 85% progress; tail to settle
+const WINDOW           = 0.5;                        // each card's drop spans 50% of progress
+const STAGGER_P        = 0.08;                       // progress gap between cards (back leads)
+const FAR_SHADOW   = "0px 40px 80px 0px rgba(0,0,0,0.04)";       // diffuse, mid-fall
 const REST_SHADOW  = "0px 1.652px 33.037px 0px rgba(0,0,0,0.1)"; // matches card boxShadow
 
-export default function Testimonials() {
-  const stackRef   = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLParagraphElement>(null);
-  const cardRefs   = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
-  // testimonial indices, front-first: Shivam, Ken, Paras, Francesco
-  const orderRef   = useRef([2, 1, 0, 3]);
-  const lockedRef  = useRef(false);
-  const reduce     = useReducedMotion();
+const lerp    = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeOut = (t: number) => 1 - (1 - t) ** 3;
+const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 
-  useEffect(() => {
-    function applyStack(withTransition: boolean) {
-      orderRef.current.forEach((tIdx, stackPos) => {
-        const card = cardRefs.current[tIdx];
-        if (!card) return;
-        const pos = POSITIONS[stackPos];
-        card.style.transition    = withTransition
-          ? `transform 320ms ${EASE}, box-shadow 320ms ease`
-          : "none";
-        card.style.transform     = [
-          "translateX(-50%)",
-          "translateY(-50%)",
-          `rotate(${pos.r}deg)`,
-          `scale(${pos.s})`,
-        ].join(" ");
-        card.style.zIndex        = String(pos.z);
-        card.style.pointerEvents = stackPos === 0 ? "auto"    : "none";
-        card.style.cursor        = stackPos === 0 ? "grab"    : "default";
-      });
+export default function Testimonials() {
+  const stackRef     = useRef<HTMLDivElement>(null);
+  const trackRef     = useRef<HTMLDivElement>(null);
+  const headingRef   = useRef<HTMLParagraphElement>(null);
+  const cardRefs     = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  // testimonial indices, front-first: Shivam, Ken, Paras, Francesco
+  const orderRef     = useRef([2, 1, 0, 3]);
+  const lockedRef    = useRef(false);
+  const committedRef = useRef(false);
+  const reduce       = useReducedMotion();
+
+  // Apply the resting fan to every card (front-first).
+  const applyStack = useCallback((withTransition: boolean) => {
+    orderRef.current.forEach((tIdx, stackPos) => {
+      const card = cardRefs.current[tIdx];
+      if (!card) return;
+      const pos = POSITIONS[stackPos];
+      card.style.transition    = withTransition
+        ? `transform 320ms ${EASE}, box-shadow 320ms ease`
+        : "none";
+      card.style.transform     = [
+        "translateX(-50%)",
+        "translateY(-50%)",
+        `rotate(${pos.r}deg)`,
+        `scale(${pos.s})`,
+      ].join(" ");
+      card.style.zIndex        = String(pos.z);
+      card.style.pointerEvents = stackPos === 0 ? "auto" : "none";
+      card.style.cursor        = stackPos === 0 ? "grab" : "default";
+    });
+  }, []);
+
+  // Snap fully visible: resting fan, heading sharp, drag-ready.
+  const settle = useCallback(() => {
+    applyStack(false);
+    const h = headingRef.current;
+    if (h) { h.style.transition = "none"; h.style.opacity = "1"; h.style.filter = "blur(0px)"; }
+    orderRef.current.forEach((tIdx) => {
+      const card = cardRefs.current[tIdx];
+      if (!card) return;
+      card.style.filter    = "blur(0px)";
+      card.style.opacity   = "1";
+      card.style.boxShadow = REST_SHADOW;
+    });
+  }, [applyStack]);
+
+  // Hand control to the drag system once the cards have landed.
+  const commit = useCallback(() => {
+    if (committedRef.current) return;
+    committedRef.current = true;
+    hasPlayed = true;            // no re-scrub on later Work-tab visits
+    lockedRef.current = false;   // release drag / keyboard
+    settle();
+  }, [settle]);
+
+  // Pre-scrub pose: cards held high above the surface, out of focus, transparent.
+  const applyStart = useCallback(() => {
+    const startScale = (window.innerWidth * 2) / CARD_W;
+    const h = headingRef.current;
+    if (h) { h.style.transition = "none"; h.style.opacity = "0"; h.style.filter = "blur(6px)"; }
+    orderRef.current.forEach((tIdx, stackPos) => {
+      const card = cardRefs.current[tIdx];
+      if (!card) return;
+      const pos = POSITIONS[stackPos];
+      card.style.transition    = "none";
+      card.style.transform     = [
+        "translateX(-50%)",
+        "translateY(-50%)",
+        `rotate(${pos.r}deg)`,
+        `scale(${startScale})`,
+      ].join(" ");
+      card.style.filter        = `blur(${START_BLUR_SCRUB}px)`;
+      card.style.opacity       = "0";
+      card.style.boxShadow     = FAR_SHADOW;
+      card.style.zIndex        = String(pos.z);
+      card.style.pointerEvents = "none";
+      card.style.cursor        = "default";
+      card.style.willChange    = "transform, filter, opacity";
+    });
+  }, []);
+
+  // Drive the fall from scroll progress (0 = pin begins, 1 = pin ends).
+  // No CSS transition while scrubbing, so scroll-up reverses 1:1 with the wheel.
+  const renderScrub = useCallback((p: number) => {
+    if (committedRef.current || reduce || hasPlayed) return;
+    const startScale = (window.innerWidth * 2) / CARD_W;
+
+    const h = headingRef.current;
+    if (h) {
+      const hp = easeOut(clamp01(p / 0.22));
+      h.style.transition = "none";
+      h.style.opacity    = String(hp);
+      h.style.filter     = `blur(${(1 - hp) * 6}px)`;
     }
 
+    orderRef.current.forEach((tIdx, stackPos) => {
+      const card = cardRefs.current[tIdx];
+      if (!card) return;
+      const pos    = POSITIONS[stackPos];
+      const endP   = LAND_END - stackPos * STAGGER_P;  // front (stackPos 0) lands last
+      const startP = endP - WINDOW;
+      const lp     = easeOut(clamp01((p - startP) / (endP - startP)));
+      card.style.transition    = "none";
+      card.style.transform     = [
+        "translateX(-50%)",
+        "translateY(-50%)",
+        `rotate(${pos.r}deg)`,
+        `scale(${lerp(startScale, pos.s, lp)})`,
+      ].join(" ");
+      card.style.filter        = `blur(${lerp(START_BLUR_SCRUB, 0, lp)}px)`;
+      card.style.opacity       = String(lp);
+      card.style.boxShadow     = lp > 0.85 ? REST_SHADOW : FAR_SHADOW;
+      card.style.zIndex        = String(pos.z);
+      card.style.pointerEvents = "none";
+    });
+
+    if (p >= 0.999) commit();
+  }, [reduce, commit]);
+
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
+  });
+  useMotionValueEvent(scrollYProgress, "change", renderScrub);
+
+  const animateScrub = !reduce && !hasPlayed;
+
+  useEffect(() => {
+    // --- Entrance state -----------------------------------------------------
+    if (reduce || hasPlayed) {
+      committedRef.current = true;   // renderScrub becomes a no-op
+      lockedRef.current    = false;  // drag enabled immediately
+      settle();
+    } else {
+      committedRef.current = false;
+      lockedRef.current    = true;   // block drag/keyboard advance until landed
+      applyStart();
+      renderScrub(scrollYProgress.get()); // catch up to current scroll position
+    }
+
+    const stackEl = stackRef.current;
+    if (!stackEl) return;
+
+    // --- Drag: throw the front card to the back ------------------------------
     function sendToBack() {
       if (lockedRef.current) return;
       lockedRef.current = true;
@@ -145,132 +263,6 @@ export default function Testimonials() {
         applyStack(true);
         setTimeout(() => { lockedRef.current = false; }, 340);
       }, 340);
-    }
-
-    const stackEl = stackRef.current;
-    if (!stackEl) return;
-
-    // --- Entrance: "perpendicular drop" -----------------------------------
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    let observer: IntersectionObserver | null = null;
-    let started = false;
-
-    // Start the cards at 2x the viewport width (way "up high", out of focus).
-    const startScale = (window.innerWidth * 2) / CARD_W;
-    // The oversized cards overflow the viewport while falling; clip horizontal
-    // overflow so no scrollbar flashes, then restore once settled.
-    const rootEl = document.documentElement;
-    const prevOverflowX = rootEl.style.overflowX;
-
-    // Pre-entrance: hold cards high above the surface — oversized, out of
-    // focus, transparent — and hide the heading.
-    function applyStart() {
-      const h = headingRef.current;
-      if (h) {
-        h.style.transition = "none";
-        h.style.opacity    = "0";
-        h.style.filter     = "blur(6px)";
-      }
-      orderRef.current.forEach((tIdx, stackPos) => {
-        const card = cardRefs.current[tIdx];
-        if (!card) return;
-        const pos = POSITIONS[stackPos];
-        card.style.transition  = "none";
-        card.style.transform   = [
-          "translateX(-50%)",
-          "translateY(-50%)",
-          `rotate(${pos.r}deg)`,
-          `scale(${startScale})`,
-        ].join(" ");
-        card.style.filter        = `blur(${START_BLUR}px)`;
-        card.style.opacity       = "0";
-        card.style.boxShadow     = FAR_SHADOW;
-        card.style.zIndex        = String(pos.z);
-        card.style.pointerEvents = "none";
-        card.style.cursor        = "default";
-      });
-    }
-
-    // Settled: normalize inline styles + hand control to the drag system.
-    function finishEntrance() {
-      hasPlayed = true;
-      lockedRef.current = false;
-      rootEl.style.overflowX = prevOverflowX;
-      applyStack(false);
-      orderRef.current.forEach((tIdx) => {
-        const card = cardRefs.current[tIdx];
-        if (card) card.style.filter = "blur(0px)";
-      });
-    }
-
-    // Heading sharpens in first, then cards fall back-to-front onto the stack.
-    function playEntrance() {
-      const h = headingRef.current;
-      if (h) {
-        h.style.transition = `opacity 1560ms ${FALL_EASE}, filter 1560ms ${FALL_EASE}`;
-        h.style.opacity    = "1";
-        h.style.filter     = "blur(0px)";
-      }
-      const last = POSITIONS.length - 1;
-      orderRef.current.forEach((tIdx, stackPos) => {
-        const card = cardRefs.current[tIdx];
-        if (!card) return;
-        const pos   = POSITIONS[stackPos];
-        // back card (stackPos = last) lands first, front (stackPos 0) last
-        const delay = HEADING_LEAD + (last - stackPos) * STAGGER;
-        timers.push(
-          setTimeout(() => {
-            card.style.transition =
-              `transform ${FALL}ms ${FALL_EASE}, filter ${FALL}ms ${FALL_EASE}, ` +
-              `opacity ${FALL}ms ${FALL_EASE}, box-shadow ${FALL}ms ${FALL_EASE}`;
-            card.style.transform = [
-              "translateX(-50%)",
-              "translateY(-50%)",
-              `rotate(${pos.r}deg)`,
-              `scale(${pos.s})`,
-            ].join(" ");
-            card.style.filter    = "blur(0px)";
-            card.style.opacity   = "1";
-            card.style.boxShadow = REST_SHADOW;
-          }, delay),
-        );
-      });
-      const total = HEADING_LEAD + last * STAGGER + FALL + 20;
-      timers.push(setTimeout(finishEntrance, total));
-    }
-
-    if (reduce || hasPlayed) {
-      // No drop: snap to rest, fully visible, drag enabled immediately.
-      applyStack(false);
-      const h = headingRef.current;
-      if (h) { h.style.opacity = "1"; h.style.filter = "blur(0px)"; }
-      orderRef.current.forEach((tIdx) => {
-        const card = cardRefs.current[tIdx];
-        if (!card) return;
-        card.style.filter    = "blur(0px)";
-        card.style.opacity   = "1";
-        card.style.boxShadow = REST_SHADOW;
-      });
-    } else {
-      lockedRef.current = true; // block drag/keyboard advance until landed
-      rootEl.style.overflowX = "hidden";
-      applyStart();
-      const wrap = wrapperRef.current;
-      if (wrap) {
-        observer = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting && !started) {
-              started = true;
-              observer?.disconnect();
-              playEntrance();
-            }
-          },
-          { threshold: 0.5 },
-        );
-        observer.observe(wrap);
-      } else {
-        playEntrance();
-      }
     }
 
     const drag = { active: false, startX: 0, startY: 0, startTime: 0, dx: 0, dy: 0 };
@@ -354,17 +346,15 @@ export default function Testimonials() {
     stackEl.addEventListener("keydown",    onKeyDown);
 
     return () => {
-      observer?.disconnect();
-      timers.forEach(clearTimeout);
-      rootEl.style.overflowX = prevOverflowX;
       stackEl.removeEventListener("mousedown",  onDown as EventListener);
       stackEl.removeEventListener("touchstart", onDown as EventListener);
       stackEl.removeEventListener("keydown",    onKeyDown);
     };
-  }, [reduce]);
+  }, [reduce, applyStart, settle, renderScrub, applyStack, scrollYProgress]);
 
-  return (
-    <div ref={wrapperRef} className="flex flex-col items-center gap-16">
+  // Heading + card stack — shared by both layouts.
+  const inner = (
+    <>
       {/* Heading */}
       <p
         ref={headingRef}
@@ -474,6 +464,37 @@ export default function Testimonials() {
           </div>
         ))}
       </div>
+    </>
+  );
+
+  // Scrub path: tall track + sticky stage pins the section while the wheel
+  // drives the fall. Reduced-motion / already-played: plain centered layout,
+  // no track, no dead scroll.
+  return animateScrub ? (
+    <div ref={trackRef} style={{ position: "relative", height: `calc(100vh + ${DROP_VH}vh)` }}>
+      <div
+        style={{
+          position:       "sticky",
+          top:            0,
+          height:         "100vh",
+          // Full-bleed: span the viewport width so the oversized falling cards
+          // clip at the screen edges (invisible) instead of the 1041px container.
+          width:          "100vw",
+          marginLeft:     "calc(50% - 50vw)",
+          overflow:       "hidden",
+          display:        "flex",
+          flexDirection:  "column",
+          alignItems:     "center",
+          justifyContent: "center",
+          gap:            "64px",
+        }}
+      >
+        {inner}
+      </div>
+    </div>
+  ) : (
+    <div className="flex flex-col items-center gap-16">
+      {inner}
     </div>
   );
 }
