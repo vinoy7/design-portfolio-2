@@ -111,19 +111,20 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
               key={link.label}
               href={link.href}
               {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="group block font-normal hover:font-medium"
               style={{
                 fontFamily: "var(--font-dm-sans)",
-                fontWeight: 400,
                 fontSize: "18px",
                 lineHeight: "24px",
                 color: "#000",
                 textDecoration: "none",
                 width: "72px",
                 textAlign: "center",
-                display: "block",
               }}
             >
-              {link.label}
+              <span className="relative inline-block after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1.5px] after:w-full after:origin-center after:scale-x-0 after:bg-black after:transition-transform after:duration-300 after:ease-out after:content-[''] group-hover:after:scale-x-100">
+                {link.label}
+              </span>
             </a>
           ))}
         </div>

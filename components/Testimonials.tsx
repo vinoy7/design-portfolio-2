@@ -183,13 +183,8 @@ export default function Testimonials() {
     if (committedRef.current || reduce || hasPlayed) return;
     const startScale = (window.innerWidth * 2) / CARD_W;
 
-    const h = headingRef.current;
-    if (h) {
-      const hp = easeOut(clamp01(p / 0.22));
-      h.style.transition = "none";
-      h.style.opacity    = String(hp);
-      h.style.filter     = `blur(${(1 - hp) * 6}px)`;
-    }
+    // Heading is decoupled from the scrub — it fades in on viewport entry
+    // (IntersectionObserver in the effect below), not on scroll progress.
 
     orderRef.current.forEach((tIdx, stackPos) => {
       const card = cardRefs.current[tIdx];
@@ -236,8 +231,32 @@ export default function Testimonials() {
       renderScrub(scrollYProgress.get()); // catch up to current scroll position
     }
 
+    // --- Heading: fade in on viewport entry (decoupled from the scrub) -------
+    // Appears as soon as the title scrolls into view from the bottom — well
+    // before the section pins — so it's up much quicker than the old 0→0.22
+    // scroll-progress gate. One-way: observer disconnects after firing.
+    let headingObserver: IntersectionObserver | null = null;
+    if (!reduce && !hasPlayed) {
+      const h = headingRef.current;
+      if (h) {
+        headingObserver = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting) {
+              h.style.transition = "opacity 600ms ease-out, filter 600ms ease-out";
+              h.style.opacity    = "1";
+              h.style.filter     = "blur(0px)";
+              headingObserver?.disconnect();
+              headingObserver = null;
+            }
+          },
+          { threshold: 0.01 }
+        );
+        headingObserver.observe(h);
+      }
+    }
+
     const stackEl = stackRef.current;
-    if (!stackEl) return;
+    if (!stackEl) { headingObserver?.disconnect(); return; }
 
     // --- Drag: throw the front card to the back ------------------------------
     function sendToBack() {
@@ -346,6 +365,7 @@ export default function Testimonials() {
     stackEl.addEventListener("keydown",    onKeyDown);
 
     return () => {
+      headingObserver?.disconnect();
       stackEl.removeEventListener("mousedown",  onDown as EventListener);
       stackEl.removeEventListener("touchstart", onDown as EventListener);
       stackEl.removeEventListener("keydown",    onKeyDown);
