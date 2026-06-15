@@ -34,7 +34,7 @@ const PILL_FORCE = 6000;
 // spring / physics (per second)
 const IDLE_STIFF = 130;
 const IDLE_DAMP = 14;
-const INTRO_STIFF = 90;
+const INTRO_STIFF = 38; // low -> dots drift slowly into place
 const GRAVITY = 40; // gentle drift during the hold
 const BURST_HOLD = 10; // seconds dots stay scattered after the blast
 
@@ -62,9 +62,11 @@ const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 export default function HeroDots({
   anchorRef,
   src,
+  startDelay = 0,
 }: {
   anchorRef: React.RefObject<HTMLDivElement | null>;
   src: string;
+  startDelay?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -167,6 +169,7 @@ export default function HeroDots({
     let last = 0;
     let ready = false;
     let disposed = false;
+    let introStartAt = 0; // wall-clock time the assemble intro may begin
 
     // ---- sample the image ----
     const img = new Image();
@@ -251,7 +254,9 @@ export default function HeroDots({
         }
       }
       ready = true;
-      last = performance.now();
+      const t0 = performance.now();
+      introStartAt = t0 + startDelay;
+      last = t0;
       raf = requestAnimationFrame(tick);
     };
 
@@ -311,6 +316,11 @@ export default function HeroDots({
       if (disposed) return;
       raf = requestAnimationFrame(tick);
       if (!ready) return;
+      // hold: keep the dot field blank until the title has faded in, then assemble
+      if (now < introStartAt) {
+        last = now;
+        return;
+      }
       let dt = (now - last) / 1000;
       last = now;
       if (dt > 0.05) dt = 0.05;

@@ -14,12 +14,9 @@ export default function Hero() {
 
   return (
     <div className="relative w-full" style={{ height: "510px" }}>
-      {/* Text block */}
-      <motion.div
+      {/* Text block — title fades in first, description follows */}
+      <div
         className="absolute flex flex-col justify-between"
-        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.1, delay: 0, ease: EASE }}
         style={{
           left: "0",
           top: "265px",
@@ -27,7 +24,10 @@ export default function Hero() {
           height: "251px",
         }}
       >
-        <div
+        <motion.div
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.3, delay: 0, ease: EASE }}
           style={{
             fontFamily: "var(--font-averia)",
             fontSize: "36px",
@@ -41,9 +41,12 @@ export default function Hero() {
             <span style={{ fontWeight: 300 }}>{"I'm "}</span>
             <span style={{ fontWeight: 700 }}>Vinoy Varghese</span>
           </p>
-        </div>
+        </motion.div>
 
-        <p
+        <motion.p
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.3, delay: 1.3, ease: EASE }}
           style={{
             fontFamily: "var(--font-dm-sans)",
             fontWeight: 400,
@@ -57,8 +60,8 @@ export default function Hero() {
           fields, from graphic design and branding to product design and user
           experience. I strive to push the boundaries of design and create
           meaningful experiences for the users.
-        </p>
-      </motion.div>
+        </motion.p>
+      </div>
 
       {/* Hero photo */}
       {reduce ? (
