@@ -394,6 +394,8 @@ export default function Testimonials() {
               boxShadow:      "0px 1.652px 33.037px 0px rgba(0,0,0,0.1)",
               overflow:       "hidden",
               padding:        "33px",
+              userSelect:     "none",
+              WebkitUserSelect: "none",
               display:        "flex",
               flexDirection:  "column",
               justifyContent: "space-between",

@@ -174,7 +174,7 @@ export default function PortfolioPage() {
 
       {/* Footer */}
       <div style={{ ...centered, marginTop: "285px" }}>
-        <Footer />
+        <Footer showCta={activeTab !== "about"} />
       </div>
     </main>
   );

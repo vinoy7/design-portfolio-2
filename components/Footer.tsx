@@ -1,10 +1,11 @@
 import Image from "next/image";
 import ctaBg from "@/assets/about-me/cta-bg-texture.png";
 
-export default function Footer() {
+export default function Footer({ showCta = true }: { showCta?: boolean }) {
   return (
     <div className="flex flex-col" style={{ gap: "105px" }}>
-      {/* CTA section */}
+      {/* CTA section — hidden on About Me page */}
+      {showCta && (
       <div
         className="relative overflow-hidden"
         style={{ background: "#000", height: "245px", /* clipPath: "inset(0 round 12px)" */ }}
@@ -83,6 +84,7 @@ export default function Footer() {
           </a>
         </div>
       </div>
+      )}
 
       {/* Footer bar */}
       <div className="flex items-center justify-between" style={{ paddingBottom: "40px" }}>

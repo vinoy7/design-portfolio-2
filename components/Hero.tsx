@@ -27,7 +27,7 @@ export default function Hero() {
         <motion.div
           initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.3, delay: 0, ease: EASE }}
+          transition={{ duration: 1.8, delay: 0, ease: EASE }}
           style={{
             fontFamily: "var(--font-averia)",
             fontSize: "36px",

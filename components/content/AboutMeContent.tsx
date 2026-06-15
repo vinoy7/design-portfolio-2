@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import vinoyPortrait from "@/assets/about-me/vinoy-portrait.png";
+import PhotographyCarousel from "./PhotographyCarousel";
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -119,8 +120,8 @@ export default function AboutMeContent() {
           </BodyText>
         </div>
 
-        {/* Photography carousel placeholder */}
-        <PlaceholderSection height={587} label="Photography carousel — images coming soon" />
+        {/* Photography carousel */}
+        <PhotographyCarousel />
 
         {/* Story paragraphs */}
         <div className="flex flex-col gap-5">
