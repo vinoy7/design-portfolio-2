@@ -20,25 +20,29 @@ import { Renderer, Camera, Transform, Plane, Program, Mesh, Texture } from "ogl"
  * ------------------------------------------------------------------ */
 
 const W = 1.0;
-const H = 1.4;
+const H = 1.3;
 const SEG = 60;
 const CURL = 0.34;
 const SPRING = 0.16;
+const SPRING_CLOSE = 0.36; // speed for auto-close page cascade
 const COMMIT = 0.5;
 const COVER_RED: [number, number, number] = [0.84, 0.12, 0.12];
-const STRAP: [number, number, number] = [0.18, 0.16, 0.22];
 const PAPER: [number, number, number] = [0.96, 0.95, 0.92];
 const BEIGE: [number, number, number] = [0.96, 0.945, 0.91];
 const LAST_SPREAD = FACES.length / 2 - 1;
 const PAGE_ASPECT = W / H;
 const SPREAD_ASPECT = (2 * W) / H;
 
+const MARGIN = 0.025; // ~10px beige border on single-image pages
 const SAMPLE = /* glsl */ `
-  vec3 sampleFull(sampler2D tex, vec2 uv, float imgAspect) {
+  vec3 sampleFull(sampler2D tex, vec2 uv, float imgAspect, vec3 beige) {
+    float m = ${MARGIN.toFixed(4)};
+    if (uv.x < m || uv.x > 1.0 - m || uv.y < m || uv.y > 1.0 - m) return beige;
+    vec2 innerUv = (uv - m) / (1.0 - 2.0 * m);
     float sx = 1.0, sy = 1.0;
     if (imgAspect > ${PAGE_ASPECT.toFixed(5)}) sx = ${PAGE_ASPECT.toFixed(5)} / imgAspect;
     else sy = imgAspect / ${PAGE_ASPECT.toFixed(5)};
-    vec2 c = (uv - 0.5) * vec2(sx, sy) + 0.5;
+    vec2 c = (innerUv - 0.5) * vec2(sx, sy) + 0.5;
     return texture2D(tex, c).rgb;
   }
   vec3 sampleHalf(sampler2D tex, vec2 uv, float side, float imgAspect) {
@@ -50,8 +54,8 @@ const SAMPLE = /* glsl */ `
     return texture2D(tex, c).rgb;
   }
   vec3 faceColor(float mode, float hasTex, sampler2D tex, float side, float aspect, vec3 beige) {
-    if (mode < 0.5 || hasTex < 0.5) return beige;     // blank / not loaded
-    if (mode < 1.5) return sampleFull(tex, uvForFace(), aspect);
+    if (mode < 0.5 || hasTex < 0.5) return beige;
+    if (mode < 1.5) return sampleFull(tex, uvForFace(), aspect, beige);
     return sampleHalf(tex, uvForFace(), side, aspect);
   }
 `;
@@ -98,10 +102,12 @@ const leafVert = /* glsl */ `
     gl_Position = projectionMatrix * modelViewMatrix * vec4(wx, position.y, wz, 1.0);
   }
 `;
+const EMBOSS_W = 512, EMBOSS_H = 666; // matches cover aspect 1:1.4
 const leafFrag = /* glsl */ `
   precision highp float;
   varying vec2 vUv; varying vec3 vN;
   uniform sampler2D tFront; uniform float uFrontMode; uniform float uFrontHas; uniform float uFrontSide; uniform float uFrontAspect; uniform float uFrontCover;
+  uniform sampler2D tEmboss;
   uniform vec3 uPaper; uniform vec3 uCover; uniform vec3 uBeige;
   vec2 uvForFace(){ return vUv; }
   ${SAMPLE}
@@ -110,6 +116,12 @@ const leafFrag = /* glsl */ `
     float lambert = clamp(dot(normalize(vN), light), 0.0, 1.0);
     if (gl_FrontFacing) {
       vec3 col = uFrontCover > 0.5 ? uCover : faceColor(uFrontMode, uFrontHas, tFront, uFrontSide, uFrontAspect, uBeige);
+      if (uFrontCover > 0.5) {
+        vec2 d = vec2(2.0 / ${EMBOSS_W}.0, 2.0 / ${EMBOSS_H}.0);
+        float hi = texture2D(tEmboss, vUv - d).r;
+        float lo = texture2D(tEmboss, vUv + d).r;
+        col = clamp(col + vec3((hi - lo) * 0.32), 0.0, 1.0);
+      }
       gl_FragColor = vec4(col * (0.6 + 0.4 * lambert), 1.0);
     } else {
       float g = fract(sin(dot(vUv, vec2(91.7, 47.3))) * 4375.85);
@@ -172,28 +184,36 @@ export default function PageFlipBook() {
     const rightStatic = new Mesh(gl, { geometry: flatGeo, program: flatProgram(-1) });
     rightStatic.position.set(W / 2, 0, -0.006); rightStatic.setParent(book);
 
+    // emboss text texture — "MY" / "PHOTOBOOK" stamped on cover
+    const embossCanvas = document.createElement("canvas");
+    embossCanvas.width = EMBOSS_W; embossCanvas.height = EMBOSS_H;
+    const ec = embossCanvas.getContext("2d")!;
+    ec.fillStyle = "#000";
+    ec.fillRect(0, 0, EMBOSS_W, EMBOSS_H);
+    ec.fillStyle = "#fff";
+    ec.textAlign = "center";
+    ec.textBaseline = "middle";
+    const cx = EMBOSS_W / 2, cy = EMBOSS_H / 2;
+    ec.font = "900 40px 'Helvetica Neue', Arial, sans-serif";
+    (ec as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = "10px";
+    ec.fillText("MY", cx, cy - 38);
+    ec.font = "900 40px 'Helvetica Neue', Arial, sans-serif";
+    (ec as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = "8px";
+    ec.fillText("PHOTOBOOK", cx, cy + 38);
+    const embossTex = new Texture(gl, { image: embossCanvas });
+
     const leafProgram = new Program(gl, {
       vertex: leafVert, fragment: leafFrag, cullFace: false,
       uniforms: {
         uTurn: { value: 0 }, uCurl: { value: CURL }, uW: { value: W },
         tFront: { value: blankTex }, uFrontMode: { value: 0 }, uFrontHas: { value: 0 },
         uFrontSide: { value: 0 }, uFrontAspect: { value: 1 }, uFrontCover: { value: 0 },
+        tEmboss: { value: embossTex },
         uPaper: { value: PAPER }, uCover: { value: COVER_RED }, uBeige: { value: BEIGE },
       },
     });
     const leaf = new Mesh(gl, { geometry: leafGeo, program: leafProgram });
     leaf.position.set(0, 0, 0); leaf.setParent(book);
-
-    const strapGeo = new Plane(gl, { width: 0.06, height: H });
-    const strapProgram = new Program(gl, {
-      vertex: flatVert,
-      fragment: /* glsl */ `precision highp float; varying vec2 vUv; uniform vec3 uColor; uniform float uOpacity;
-        void main(){ float sh=0.75+0.25*smoothstep(0.0,0.5,vUv.x)*(1.0-smoothstep(0.5,1.0,vUv.x)); gl_FragColor=vec4(uColor*sh,uOpacity);} `,
-      transparent: true,
-      uniforms: { uColor: { value: STRAP }, uOpacity: { value: 1 } },
-    });
-    const strap = new Mesh(gl, { geometry: strapGeo, program: strapProgram });
-    strap.position.set(W * 0.9, 0, 0.02); strap.setParent(book);
 
     // ---- state ----
     let spread = -1;
@@ -201,6 +221,7 @@ export default function PageFlipBook() {
     let mode: "idle" | "hover" | "drag" | "anim" = "idle";
     let dir: 1 | -1 = 1;
     let dragging = false;
+    let autoClose = false;
 
     function faceAt(i: number): Face {
       return i >= 0 && i < FACES.length ? FACES[i] : { kind: "blank" };
@@ -259,7 +280,11 @@ export default function PageFlipBook() {
       if (spread === -1 && spread < LAST_SPREAD) { dir = 1; configure(spread); turn = 0; dragging = true; mode = "drag"; }
       else if (x > 0.5 && spread < LAST_SPREAD) { dir = 1; configure(spread); turn = 0; dragging = true; mode = "drag"; }
       else if (x <= 0.5 && spread > -1) { dir = -1; configure(spread - 1); turn = 1; dragging = true; mode = "drag"; }
-      else if (x > 0.5 && spread === LAST_SPREAD) { spread = 0; dir = -1; configure(-1); turn = 1; dragging = true; mode = "drag"; }
+      else if (x > 0.5 && spread === LAST_SPREAD) {
+        // back cover click: cascade all pages left-to-right then close
+        autoClose = true;
+        dir = -1; configure(spread - 1); turn = 1; target = 0; mode = "anim";
+      }
       else return;
       try { gl.canvas.setPointerCapture(e.pointerId); } catch {}
     }
@@ -303,19 +328,23 @@ export default function PageFlipBook() {
     function tick() {
       if (disposed) return;
       raf = requestAnimationFrame(tick);
-      turn += (target - turn) * SPRING;
+      turn += (target - turn) * (autoClose ? SPRING_CLOSE : SPRING);
       if (mode === "anim") {
         if (dir === 1 && target === 1 && turn > 0.985) commit();
         else if (dir === 1 && target === 0 && turn < 0.015) { restConfigure(); mode = "idle"; }
         else if (dir === -1 && target === 0 && turn < 0.015) commit();
         else if (dir === -1 && target === 1 && turn > 0.985) { restConfigure(); mode = "idle"; }
       }
+      // auto-close cascade: after each commit, keep flipping back until cover is shut
+      if (autoClose && mode === "idle") {
+        if (spread > -1) { dir = -1; configure(spread - 1); turn = 1; target = 0; mode = "anim"; }
+        else { autoClose = false; }
+      }
       // the active pair includes the cover when a == -1 -> drive open/close centring
       const a = dir === 1 ? spread : spread - 1;
       const openAmt = a === -1 ? Math.min(1, turn) : 1;
       book.position.x = -(1 - openAmt) * (W / 2);
       leftStatic.visible = !(a === -1 && turn < 0.04);
-      (strapProgram.uniforms.uOpacity.value as number) = a === -1 ? 1 - Math.min(1, turn * 2) : 0;
       (leafProgram.uniforms.uTurn.value as number) = turn;
       // re-pull front texture once it finishes loading
       if (a >= 0 && (leafProgram.uniforms.uFrontCover.value as number) < 0.5 && (leafProgram.uniforms.uFrontHas.value as number) === 0) {
@@ -338,8 +367,8 @@ export default function PageFlipBook() {
 
   if (reduce) return <PhotographyCarousel />;
   return (
-    <div className="relative w-full" style={{ aspectRatio: "1.5 / 1" }}>
-      <div ref={mountRef} className="absolute inset-0" style={{ touchAction: "none" }} />
+    <div className="relative w-full" style={{ aspectRatio: "1.5 / 1", overflow: "visible" }}>
+      <div ref={mountRef} className="absolute" style={{ touchAction: "none", inset: "-10% -12%" }} />
     </div>
   );
 }
