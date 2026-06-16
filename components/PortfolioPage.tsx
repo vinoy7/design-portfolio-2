@@ -165,7 +165,7 @@ export default function PortfolioPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            style={{ ...centered, marginTop: "285px" }}
+            style={{ ...centered, marginTop: "200px" }}
           >
             <Testimonials />
           </motion.div>
@@ -173,7 +173,7 @@ export default function PortfolioPage() {
       </AnimatePresence>
 
       {/* Footer */}
-      <div style={{ ...centered, marginTop: "285px" }}>
+      <div style={{ ...centered, marginTop: "200px" }}>
         <Footer showCta={activeTab !== "about"} />
       </div>
     </main>
