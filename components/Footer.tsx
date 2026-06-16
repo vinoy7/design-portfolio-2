@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ctaBg from "@/assets/about-me/cta-bg-texture.png";
+import BookACallButton from "./BookACallButton";
 
 export default function Footer({ showCta = true }: { showCta?: boolean }) {
   return (
@@ -54,34 +55,7 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
             <p>and bring your idea to life</p>
           </div>
 
-          <a
-            href="https://cal.com/vinoy7/30min"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              background: "#292929",
-              borderRadius: "4px",
-              padding: "8px 12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textDecoration: "none",
-              width: "144px",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-dm-sans)",
-                fontWeight: 500,
-                fontSize: "20px",
-                lineHeight: "32px",
-                letterSpacing: "-0.4px",
-                color: "#f5eee2",
-              }}
-            >
-              Book a Call
-            </span>
-          </a>
+          <BookACallButton />
         </div>
       </div>
       )}
@@ -98,12 +72,13 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
             whiteSpace: "nowrap",
           }}
         >
-          © 2026. All lefts reserved.
+          © 2026
         </p>
 
         <div className="flex items-center gap-5">
           {[
             { label: "Email", href: "mailto:vinoy@fusepay.app", external: false },
+            { label: "GitHub", href: "https://github.com/vinoy7", external: true },
             { label: "LinkedIn", href: "https://www.linkedin.com/in/vinoy777", external: true },
             { label: "Resume", href: "/Vinoy_Varghese_Resume.pdf", external: true },
           ].map((link) => (

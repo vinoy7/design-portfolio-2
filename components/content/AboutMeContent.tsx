@@ -106,11 +106,12 @@ export default function AboutMeContent() {
       {/* How design happened for me? — trails the portrait */}
       <motion.div
         {...revealProps(0.2)}
-        className="flex flex-col gap-10"
+        className="flex flex-col gap-2"
         style={{ marginTop: "40px" }}
       >
-        <div className="flex flex-col gap-2">
-          <SectionHeading>How design happened for me?</SectionHeading>
+        <SectionHeading>How design happened for me?</SectionHeading>
+
+        <div className="flex flex-col gap-5">
           <BodyText>
             Before I got into design, I spent four years as a photographer. I
             was pretty good behind the camera... not so great at figuring out
@@ -118,13 +119,6 @@ export default function AboutMeContent() {
             invoices and client management weren&apos;t as exciting as chasing
             the perfect shot.
           </BodyText>
-        </div>
-
-        {/* Photography carousel */}
-        {/* <PhotographyCarousel /> */}
-
-        {/* Story paragraphs */}
-        <div className="flex flex-col gap-5">
           <BodyText>
             My first real introduction to design happened during college when I
             took an Advertising Design course. That&apos;s where I learned the
@@ -158,41 +152,35 @@ export default function AboutMeContent() {
       {/* Beyond design... */}
       <motion.div
         {...revealProps(0)}
-        className="flex flex-col gap-10"
+        className="flex flex-col gap-2"
         style={{ marginTop: "140px" }}
       >
-        <div className="flex flex-col gap-2">
-          <SectionHeading>Beyond design...</SectionHeading>
-          <div className="flex flex-col gap-5">
-            <BodyText>
-              Outside of design, you&apos;ll usually find me geeking out over
-              sports and films. Even though I barely had time this past year to
-              keep up with movies and shows, I still somehow managed to watch
-              most of the films even if it took me a week to watch it ...
-              priorities, I guess.
-            </BodyText>
-            <BodyText>
-              One of the biggest perks of remote work has been the freedom to
-              travel. Recently, I spent over two months on the road. It started
-              with my company&apos;s offsite in Goa and Chennai, after which I
-              took my first solo trip through Hyderabad and the coastal regions
-              of Kerala.
-            </BodyText>
-          </div>
+        <SectionHeading>Beyond design...</SectionHeading>
+        <div className="flex flex-col gap-5">
+          <BodyText>
+            Outside of design, you&apos;ll usually find me geeking out over
+            sports and films. Even though I barely had time this past year to
+            keep up with movies and shows, I still somehow managed to watch
+            most of the films even if it took me a week to watch it ...
+            priorities, I guess.
+          </BodyText>
+          <BodyText>
+            One of the biggest perks of remote work has been the freedom to
+            travel. Recently, I spent over two months on the road. It started
+            with my company&apos;s offsite in Goa and Chennai, after which I
+            took my first solo trip through Hyderabad and the coastal regions
+            of Kerala.
+          </BodyText>
+          <BodyText>
+            That journey turned out to be much more than just travel. I met people
+            from all over the world, from the UK and Portugal to Singapore and
+            Japan. One of the best parts was getting to show people around my
+            hometown in Kerala while also learning about their cultures, stories,
+            and perspectives. It made the whole experience feel a lot more
+            personal and memorable than just checking places off a list. All of
+            this while I was designing across 4 products at Fusepay.
+          </BodyText>
         </div>
-
-        {/* Travel image marquee placeholder */}
-        {/* <PlaceholderSection height={320} label="Travel image marquee - images coming soon" /> */}
-
-        <BodyText>
-          That journey turned out to be much more than just travel. I met people
-          from all over the world, from the UK and Portugal to Singapore and
-          Japan. One of the best parts was getting to show people around my
-          hometown in Kerala while also learning about their cultures, stories,
-          and perspectives. It made the whole experience feel a lot more
-          personal and memorable than just checking places off a list. All of
-          this while I was designing across 4 products at Fusepay.
-        </BodyText>
       </motion.div>
     </div>
   );

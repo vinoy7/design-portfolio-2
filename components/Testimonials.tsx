@@ -406,7 +406,15 @@ export default function Testimonials() {
         aria-label="Testimonials"
         tabIndex={0}
       >
-        {TESTIMONIALS.map((t, i) => (
+        {TESTIMONIALS.map((t, i) => {
+          // Compute initial stack position so cards are correctly placed from
+          // first paint — before the useEffect runs. Without this, all cards
+          // sit at raw left:50%/top:50% (no centering translate) and pile up
+          // in the bottom-right of the stack div (Francesco visible on top via
+          // DOM order).
+          const initStackPos = orderRef.current.indexOf(i);
+          const initPos      = POSITIONS[initStackPos];
+          return (
           <div
             key={t.id}
             ref={(el) => { cardRefs.current[i] = el; }}
@@ -427,6 +435,11 @@ export default function Testimonials() {
               justifyContent: "space-between",
               gap:            "24px",
               willChange:     "transform",
+              transform:      `translateX(-50%) translateY(-50%) rotate(${initPos.r}deg) scale(${initPos.s})`,
+              zIndex:         String(initPos.z),
+              opacity:        animateScrub ? 0 : 1,
+              pointerEvents:  initStackPos === 0 ? "auto" : "none",
+              cursor:         initStackPos === 0 ? "grab" : "default",
             }}
           >
             {/* Quote */}
@@ -490,7 +503,8 @@ export default function Testimonials() {
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
