@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import vinoyPortrait from "@/assets/about-me/vinoy-portrait.png";
-import PhotographyCarousel from "./PhotographyCarousel";
+// import PhotographyCarousel from "./PhotographyCarousel";
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -39,34 +39,34 @@ function BodyText({ children }: { children: React.ReactNode }) {
   );
 }
 
-function PlaceholderSection({
-  height,
-  label,
-}: {
-  height: number;
-  label: string;
-}) {
-  return (
-    <div
-      className="relative overflow-hidden w-full flex items-center justify-center"
-      style={{ height, background: "#f0f0f0", flexShrink: 0 }}
-    >
-      <p
-        style={{
-          fontFamily: "var(--font-dm-sans)",
-          fontWeight: 400,
-          fontSize: "19px",
-          lineHeight: "28px",
-          letterSpacing: "-0.19px",
-          color: "#757575",
-          textAlign: "center",
-        }}
-      >
-        {label}
-      </p>
-    </div>
-  );
-}
+// function PlaceholderSection({
+//   height,
+//   label,
+// }: {
+//   height: number;
+//   label: string;
+// }) {
+//   return (
+//     <div
+//       className="relative overflow-hidden w-full flex items-center justify-center"
+//       style={{ height, background: "#f0f0f0", flexShrink: 0 }}
+//     >
+//       <p
+//         style={{
+//           fontFamily: "var(--font-dm-sans)",
+//           fontWeight: 400,
+//           fontSize: "19px",
+//           lineHeight: "28px",
+//           letterSpacing: "-0.19px",
+//           color: "#757575",
+//           textAlign: "center",
+//         }}
+//       >
+//         {label}
+//       </p>
+//     </div>
+//   );
+// }
 
 const revealProps = (delay = 0) => ({
   initial: { opacity: 0, y: 56 },
@@ -121,7 +121,7 @@ export default function AboutMeContent() {
         </div>
 
         {/* Photography carousel */}
-        <PhotographyCarousel />
+        {/* <PhotographyCarousel /> */}
 
         {/* Story paragraphs */}
         <div className="flex flex-col gap-5">
@@ -182,7 +182,7 @@ export default function AboutMeContent() {
         </div>
 
         {/* Travel image marquee placeholder */}
-        <PlaceholderSection height={320} label="Travel image marquee — images coming soon" />
+        {/* <PlaceholderSection height={320} label="Travel image marquee - images coming soon" /> */}
 
         <BodyText>
           That journey turned out to be much more than just travel. I met people

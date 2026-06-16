@@ -210,13 +210,19 @@ export default function Testimonials() {
     if (p >= 0.999) commit();
   }, [reduce, commit]);
 
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ["start start", "end end"],
-  });
-  useMotionValueEvent(scrollYProgress, "change", renderScrub);
-
   const animateScrub = !reduce && !hasPlayed;
+
+  // Only bind the target ref when the tracked element (the tall track div)
+  // actually renders. On the reduced-motion / already-played path the track is
+  // absent, so passing trackRef would leave it unhydrated → motion throws
+  // "Target ref is defined but not hydrated". Empty opts → harmless page scroll
+  // (renderScrub is a no-op via committedRef on that path).
+  const { scrollYProgress } = useScroll(
+    animateScrub
+      ? { target: trackRef, offset: ["start start", "end end"] }
+      : {}
+  );
+  useMotionValueEvent(scrollYProgress, "change", renderScrub);
 
   useEffect(() => {
     // --- Entrance state -----------------------------------------------------
