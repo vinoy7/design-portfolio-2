@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Averia_Serif_Libre, DM_Sans } from "next/font/google";
 import "./globals.css";
+import TabTeaser from "@/components/TabTeaser";
 
 const averiaSerifLibre = Averia_Serif_Libre({
   variable: "--font-averia",
@@ -16,10 +17,26 @@ const dmSans = DM_Sans({
   axes: ["opsz"],
 });
 
+const TITLE = "Vinoy Varghese — Product Designer";
+const DESCRIPTION =
+  "Portfolio of Vinoy Varghese, product designer working across FinTech, SalesTech, EdTech, and HRTech.";
+
 export const metadata: Metadata = {
-  title: "Vinoy Varghese — Product Designer",
-  description:
-    "Portfolio of Vinoy Varghese, product designer working across FinTech, SalesTech, EdTech, and HRTech.",
+  metadataBase: new URL("https://vinoy.in"),
+  title: "Vinoy's Design Portfolio",
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "https://vinoy.in",
+    siteName: "Vinoy Varghese",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +49,10 @@ export default function RootLayout({
       lang="en"
       className={`${averiaSerifLibre.variable} ${dmSans.variable} antialiased`}
     >
-      <body>{children}</body>
+      <body>
+        <TabTeaser />
+        {children}
+      </body>
     </html>
   );
 }
