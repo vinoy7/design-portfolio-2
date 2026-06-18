@@ -1,45 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image, { type StaticImageData } from "next/image";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 
-import bike from "@/assets/about-me/how-design-happened/Bike.png";
-import butterfly from "@/assets/about-me/how-design-happened/Butterfly.png";
-import cat from "@/assets/about-me/how-design-happened/Cat.png";
-import chair from "@/assets/about-me/how-design-happened/Chair.png";
-import chicklet from "@/assets/about-me/how-design-happened/Chicklet.png";
-import circus from "@/assets/about-me/how-design-happened/Circus.png";
-import dragonfly from "@/assets/about-me/how-design-happened/Dragonfly.png";
-import flamingo from "@/assets/about-me/how-design-happened/Flamingo.png";
-import frame from "@/assets/about-me/how-design-happened/Frame 1410085077.png";
-import lotus from "@/assets/about-me/how-design-happened/Lotus.png";
-import mumbai from "@/assets/about-me/how-design-happened/Mumbai.png";
-import scooter from "@/assets/about-me/how-design-happened/Scooter.png";
-import sealink from "@/assets/about-me/how-design-happened/Sealink.png";
-import skull from "@/assets/about-me/how-design-happened/Skull.png";
-import stars from "@/assets/about-me/how-design-happened/Stars.png";
-import theyyam from "@/assets/about-me/how-design-happened/Theyyam.png";
-
-const SLIDES: { src: StaticImageData; alt: string }[] = [
-  { src: bike, alt: "Bike" },
-  { src: butterfly, alt: "Butterfly" },
-  { src: cat, alt: "Cat" },
-  { src: chair, alt: "Chair" },
-  { src: chicklet, alt: "Chicklet" },
-  { src: circus, alt: "Circus" },
-  { src: dragonfly, alt: "Dragonfly" },
-  { src: flamingo, alt: "Flamingo" },
-  { src: frame, alt: "Photography" },
-  { src: lotus, alt: "Lotus" },
-  { src: mumbai, alt: "Mumbai" },
-  { src: scooter, alt: "Scooter" },
-  { src: sealink, alt: "Sea Link" },
-  { src: skull, alt: "Skull" },
-  { src: stars, alt: "Stars" },
-  { src: theyyam, alt: "Theyyam" },
-];
+import { SLIDES } from "./howDesignSlides";
 
 const GAP = 16;
 

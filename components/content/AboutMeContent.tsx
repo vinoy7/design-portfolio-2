@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import vinoyPortrait from "@/assets/about-me/vinoy-portrait.png";
-// import PhotographyCarousel from "./PhotographyCarousel";
+import PageFlipBook from "./PageFlipBook";
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -181,6 +181,11 @@ export default function AboutMeContent() {
             this while I was designing across 4 products at Fusepay.
           </BodyText>
         </div>
+      </motion.div>
+
+      {/* Sketchbook — WebGL page-flip of personal art/photography */}
+      <motion.div {...revealProps(0)} style={{ marginTop: "140px" }}>
+        <PageFlipBook />
       </motion.div>
     </div>
   );

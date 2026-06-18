@@ -6,7 +6,6 @@
 2. Invoke skill: `caveman` — terse communication mode
 3. Invoke skill: `andrej-karpathy-skills:karpathy-guidelines` — coding discipline
 4. Invoke skill: `design-taste-frontend` — frontend design standards
-5. Switch to auto mode (`/auto`) — proceed without stopping for clarifying questions
 
 ## Git Rules
 
