@@ -72,12 +72,12 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
             whiteSpace: "nowrap",
           }}
         >
-          © 2026
+          © 2026 Vinoy Varghese. All Rights Reserved.
         </p>
 
         <div className="flex items-center gap-5">
           {[
-            { label: "Email", href: "mailto:vinoy@fusepay.app", external: false },
+            { label: "Email", href: "mailto:vinoy.248@gmail.com", external: false },
             { label: "GitHub", href: "https://github.com/vinoy7", external: true },
             { label: "LinkedIn", href: "https://www.linkedin.com/in/vinoy777", external: true },
             { label: "Resume", href: "/Vinoy_Varghese_Resume.pdf", external: true },
