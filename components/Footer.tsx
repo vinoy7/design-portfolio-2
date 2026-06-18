@@ -72,7 +72,7 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
             whiteSpace: "nowrap",
           }}
         >
-          © 2026 Vinoy Varghese. All Rights Reserved.
+          © 2026 Vinoy Varghese.
         </p>
 
         <div className="flex items-center gap-5">
