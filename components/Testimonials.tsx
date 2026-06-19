@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useReducedMotion, useScroll, useMotionValueEvent } from "motion/react";
 import parasAryaPhoto    from "@/assets/about-me/testimonials/paras-arya.png";
 import kenRodriguesPhoto from "@/assets/about-me/testimonials/ken-rodrigues.png";
@@ -106,6 +106,12 @@ export default function Testimonials() {
   const lockedRef    = useRef(false);
   const committedRef = useRef(false);
   const reduce       = useReducedMotion();
+  // Drives the one-time collapse from the tall scrub track to the plain layout
+  // once the fall has played. Without this re-render the 160vh track + sticky
+  // pin would stay mounted, leaving a 60vh dead pinned-scroll zone you have to
+  // grind back through on the way up.
+  const [played, setPlayed] = useState(false);
+  const preCollapseTopRef   = useRef<number | null>(null);
 
   // Apply the resting fan to every card (front-first).
   const applyStack = useCallback((withTransition: boolean) => {
@@ -149,6 +155,11 @@ export default function Testimonials() {
     hasPlayed = true;            // no re-scrub on later Work-tab visits
     lockedRef.current = false;   // release drag / keyboard
     settle();
+    // Anchor on the heading's current screen position, then re-render to the
+    // plain layout (drops the track + pin). useLayoutEffect compensates scroll
+    // so the collapse doesn't visibly jump.
+    preCollapseTopRef.current = headingRef.current?.getBoundingClientRect().top ?? null;
+    setPlayed(true);
   }, [settle]);
 
   // Pre-scrub pose: cards held high above the surface, out of focus, transparent.
@@ -211,6 +222,16 @@ export default function Testimonials() {
   }, [reduce, commit]);
 
   const animateScrub = !reduce && !hasPlayed;
+
+  // After the collapse to the plain layout, keep the heading visually fixed by
+  // scrolling away the height the track no longer occupies — no jump.
+  useLayoutEffect(() => {
+    if (!played || preCollapseTopRef.current === null) return;
+    const after = headingRef.current?.getBoundingClientRect().top ?? 0;
+    const delta = after - preCollapseTopRef.current;
+    if (delta) window.scrollBy(0, delta);
+    preCollapseTopRef.current = null;
+  }, [played]);
 
   // Only bind the target ref when the tracked element (the tall track div)
   // actually renders. On the reduced-motion / already-played path the track is

@@ -141,7 +141,7 @@ export default function PageFlipBook() {
     if (!mount) return;
     let disposed = false;
 
-    const renderer = new Renderer({ alpha: true, dpr: Math.min(2, window.devicePixelRatio), preserveDrawingBuffer: true });
+    const renderer = new Renderer({ alpha: true, dpr: Math.min(2, window.devicePixelRatio) });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     mount.appendChild(gl.canvas);
@@ -151,7 +151,11 @@ export default function PageFlipBook() {
     gl.canvas.style.cursor = "grab";
 
     const camera = new Camera(gl, { fov: 32, near: 0.1, far: 100 });
-    camera.position.set(0, 0, 3.0);
+    // z back + matching vertical bleed (see mount inset): a page standing
+    // vertical mid-flip swings ~1 unit toward camera (~1.4x magnified). Pulling
+    // back shrinks the book's screen fraction; the larger canvas restores its
+    // px size — net: same book, enough headroom that GL no longer clips the arc.
+    camera.position.set(0, 0, 3.75);
     const book = new Transform();
 
     // textures keyed by src
@@ -255,11 +259,6 @@ export default function PageFlipBook() {
     function restConfigure() { configure(spread); turn = 0; target = 0; dir = 1; }
     configure(-1);
 
-    (window as unknown as { __pf: unknown }).__pf = {
-      get spread() { return spread; }, get turn() { return +turn.toFixed(3); }, get mode() { return mode; },
-      get frontHas() { return leafProgram.uniforms.uFrontHas.value; }, get last() { return LAST_SPREAD; },
-    };
-
     function commit() {
       spread = dir === 1 ? Math.min(LAST_SPREAD, spread + 1) : Math.max(-1, spread - 1);
       restConfigure(); mode = "idle"; playFlip();
@@ -277,7 +276,7 @@ export default function PageFlipBook() {
       ensureAudio(); downX = e.clientX; downY = e.clientY; moved = false;
       const { x } = rel(e);
       // closed book: click anywhere opens cover
-      if (spread === -1 && spread < LAST_SPREAD) { dir = 1; configure(spread); turn = 0; dragging = true; mode = "drag"; }
+      if (spread === -1) { dir = 1; configure(spread); turn = 0; dragging = true; mode = "drag"; }
       else if (x > 0.5 && spread < LAST_SPREAD) { dir = 1; configure(spread); turn = 0; dragging = true; mode = "drag"; }
       else if (x <= 0.5 && spread > -1) { dir = -1; configure(spread - 1); turn = 1; dragging = true; mode = "drag"; }
       else if (x > 0.5 && spread === LAST_SPREAD) {
@@ -368,7 +367,7 @@ export default function PageFlipBook() {
   if (reduce) return <PhotographyCarousel />;
   return (
     <div className="relative w-full" style={{ aspectRatio: "1.5 / 1", overflow: "visible" }}>
-      <div ref={mountRef} className="absolute" style={{ touchAction: "none", inset: "-10% -12%" }} />
+      <div ref={mountRef} className="absolute" style={{ touchAction: "none", inset: "-26% -12%" }} />
     </div>
   );
 }

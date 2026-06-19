@@ -184,7 +184,7 @@ export default function AboutMeContent() {
       </motion.div>
 
       {/* Sketchbook — WebGL page-flip of personal art/photography */}
-      <motion.div {...revealProps(0)} style={{ marginTop: "140px" }}>
+      <motion.div {...revealProps(0)} style={{ marginTop: "200px" }}>
         <PageFlipBook />
       </motion.div>
     </div>
