@@ -5,8 +5,9 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 
-import { SLIDES } from "./howDesignSlides";
+import { ITEMS } from "./howDesignSlides";
 
+const SLIDES = ITEMS.map((it, i) => ({ src: it.src, alt: `Photo ${i + 1}` }));
 const GAP = 16;
 
 export default function PhotographyCarousel() {
@@ -68,12 +69,11 @@ export default function PhotographyCarousel() {
       {/* Track */}
       <div
         ref={trackRef}
-        className="flex h-full overflow-x-auto"
+        className="no-scrollbar flex h-full overflow-x-auto"
         style={{
           gap: GAP,
           scrollSnapType: "x mandatory",
           scrollbarWidth: "none",
-          msOverflowStyle: "none",
         }}
       >
         {SLIDES.map(({ src, alt }, i) => (
@@ -95,12 +95,6 @@ export default function PhotographyCarousel() {
         ))}
       </div>
 
-      {/* Hide scrollbar (WebKit) */}
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
 
       {/* Chevrons */}
       <button

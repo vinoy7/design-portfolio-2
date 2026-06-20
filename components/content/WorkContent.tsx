@@ -3,17 +3,12 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-// import { useSquircle } from "@/components/hooks/useSquircle";
 import fusepayImg from "@/assets/work/fusepay-card-image.png";
 import connectImg from "@/assets/work/connectandsell-card-image.png";
 import coditasBg from "@/assets/work/coditas-bg-gradient.png";
 import coditasUi from "@/assets/work/coditas-ui.png";
 import weekdayBg from "@/assets/work/weekday-bg-texture.png";
 import weekdayUi from "@/assets/work/weekday-ui.png";
-
-const CARD_STYLE = {
-  fontFamily: "var(--font-dm-sans)",
-};
 
 const META_STYLE: React.CSSProperties = {
   fontFamily: "var(--font-dm-sans)",
@@ -193,7 +188,6 @@ const revealX = (dir: "left" | "right", delay = 0, reduce = false) => ({
   transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 });
 
-// const SQUIRCLE = { radius: 12, smoothing: 0.6 };
 const CARD_BORDER = "1px solid #e6e6e6";
 
 export default function WorkContent() {
@@ -202,10 +196,6 @@ export default function WorkContent() {
   const [hovered3, setHovered3] = useState(false);
   const [hovered4, setHovered4] = useState(false);
   const reduce = useReducedMotion() ?? false;
-  // const card1Ref = useSquircle(SQUIRCLE);
-  // const card2Ref = useSquircle(SQUIRCLE);
-  // const card3Ref = useSquircle(SQUIRCLE);
-  // const card4Ref = useSquircle(SQUIRCLE);
 
   return (
     <div className="flex flex-col gap-5">

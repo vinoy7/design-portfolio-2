@@ -22,8 +22,6 @@ const DIV_W = 669;
 const STEP = 2; // sample grid -> dot spacing (CSS px)
 const DOT = 3; // dot diameter in CSS px (overlaps the 2px grid -> no gaps)
 const SAT = 1.45; // saturation boost for vivid, true-to-original color
-const CONTRAST = 1.0; // no contrast boost (true-to-photo tones)
-const DARKEN = 1.0; // keep original brightness (no muting)
 
 // interaction
 const HOVER_R = 200;
@@ -244,9 +242,6 @@ export default function HeroDots({
           r = clamp255((r - lum) * SAT + lum);
           g = clamp255((g - lum) * SAT + lum);
           b = clamp255((b - lum) * SAT + lum);
-          r = clamp255(((r - 128) * CONTRAST + 128) * DARKEN);
-          g = clamp255(((g - 128) * CONTRAST + 128) * DARKEN);
-          b = clamp255(((b - 128) * CONTRAST + 128) * DARKEN);
           col[i] = (255 << 24) | (b << 16) | (g << 8) | r;
           px[i] = Math.random() * vw;
           py[i] = Math.random() * vh;

@@ -218,7 +218,7 @@ export default function Testimonials() {
       card.style.pointerEvents = "none";
     });
 
-    if (p >= 0.999) commit();
+    if (p >= LAND_END + 0.02) commit();
   }, [reduce, commit]);
 
   const animateScrub = !reduce && !hasPlayed;
@@ -383,7 +383,6 @@ export default function Testimonials() {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key !== " " && e.key !== "Enter" && e.key !== "ArrowRight") return;
       e.preventDefault();
-      drag.dx = 200; drag.dy = 0;
       sendToBack();
     }
 

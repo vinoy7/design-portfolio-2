@@ -39,34 +39,6 @@ function BodyText({ children }: { children: React.ReactNode }) {
   );
 }
 
-// function PlaceholderSection({
-//   height,
-//   label,
-// }: {
-//   height: number;
-//   label: string;
-// }) {
-//   return (
-//     <div
-//       className="relative overflow-hidden w-full flex items-center justify-center"
-//       style={{ height, background: "#f0f0f0", flexShrink: 0 }}
-//     >
-//       <p
-//         style={{
-//           fontFamily: "var(--font-dm-sans)",
-//           fontWeight: 400,
-//           fontSize: "19px",
-//           lineHeight: "28px",
-//           letterSpacing: "-0.19px",
-//           color: "#757575",
-//           textAlign: "center",
-//         }}
-//       >
-//         {label}
-//       </p>
-//     </div>
-//   );
-// }
 
 const revealProps = (delay = 0) => ({
   initial: { opacity: 0, y: 56 },

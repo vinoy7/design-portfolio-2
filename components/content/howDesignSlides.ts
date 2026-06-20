@@ -67,6 +67,3 @@ export function buildFaces(): Face[] {
 
 export const FACES = buildFaces();
 
-// Legacy flat carousel (reduced-motion fallback) wants {src, alt}.
-export type Slide = { src: string; alt: string };
-export const SLIDES: Slide[] = ITEMS.map((it, i) => ({ src: it.src, alt: `Photo ${i + 1}` }));
