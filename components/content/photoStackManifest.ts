@@ -37,7 +37,7 @@ export const PHOTOS: Photo[] = [
   { src: "/assets/photo-stack/single-40.jpg", aspect: "portrait", title: "Artist Colleague from Coditas", location: "Pune, India" },
   { src: "/assets/photo-stack/single-41b.jpg", aspect: "portrait", title: "Fractured my wrist within the first hour of offsite", location: "Goa, India" },
   { src: "/assets/photo-stack/single-42b.jpg", aspect: "portrait", title: "Calmly waiting for the Monday Morning Storm", location: "Somewhere near Pune, India" },
-  { src: "/assets/photo-stack/double-2.jpg", aspect: "landscape", title: "Colleagues from when I worked at Coditas", location: "Pune, India" },
+  { src: "/assets/photo-stack/double-2.jpg", aspect: "landscape", title: "Senior colleagues from my time at Coditas", location: "Pune, India" },
   { src: "/assets/photo-stack/double-3.jpg", aspect: "landscape", title: "'The Oreo Boys' from Fusepay", location: "Mumbai Airport, India" },
   { src: "/assets/photo-stack/double-15b.jpg", aspect: "landscape", title: "Attending Theyyam Performance", location: "Kannur, India" },
   { src: "/assets/photo-stack/double-18.jpg", aspect: "landscape", title: "Beach view from the South side", location: "Varkala, India" },
