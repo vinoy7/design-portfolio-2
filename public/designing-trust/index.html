@@ -1131,6 +1131,14 @@
     .cs-img-full {
       border-radius: 0 !important;
     }
+    /* deter casual image/video saving */
+    img, video {
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    video::-webkit-media-controls-download-button { display: none; }
   </style>
 </head>
 <body>
@@ -2143,5 +2151,14 @@
 
   <script src="/assets/js/rotate-lock.js" defer></script>
   <script type="module" src="/assets/js/squircle.js"></script>
+  <script>
+    /* block right-click save + drag for images/videos */
+    ['contextmenu', 'dragstart'].forEach(function (ev) {
+      document.addEventListener(ev, function (e) {
+        var tag = e.target && e.target.tagName;
+        if (tag === 'IMG' || tag === 'VIDEO') e.preventDefault();
+      });
+    });
+  </script>
 </body>
 </html>

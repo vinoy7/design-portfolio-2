@@ -37,3 +37,17 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Deter casual image/video saving site-wide: no drag-to-desktop, no selection,
+   no long-press save sheet. Right-click/drag are also blocked via a delegated
+   listener in PortfolioPage (and an inline script on the static case-study page). */
+img,
+video {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+video::-webkit-media-controls-download-button {
+  display: none;
+}

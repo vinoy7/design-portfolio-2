@@ -67,6 +67,21 @@ export default function PortfolioPage() {
     };
   }, []);
 
+  // Block right-click "Save image/video" and drag-to-desktop across the whole
+  // SPA via one delegated listener (covers every img/video in any tab).
+  useEffect(() => {
+    const block = (e: Event) => {
+      const t = e.target as HTMLElement;
+      if (t instanceof HTMLImageElement || t instanceof HTMLVideoElement) e.preventDefault();
+    };
+    document.addEventListener("contextmenu", block);
+    document.addEventListener("dragstart", block);
+    return () => {
+      document.removeEventListener("contextmenu", block);
+      document.removeEventListener("dragstart", block);
+    };
+  }, []);
+
   const handleTab = (tab: Tab) => {
     setActiveTab(tab);
     history.replaceState(null, "", `#${tab}`);
