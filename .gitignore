@@ -47,3 +47,4 @@ assets/ai-experiments/*.mov
 
 # Case study raw working folder (mov originals ~60MB; served copies live in public/)
 /designing-trust/
+.playwright-mcp/

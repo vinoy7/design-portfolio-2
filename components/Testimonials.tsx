@@ -396,7 +396,10 @@ export default function Testimonials() {
       stackEl.removeEventListener("touchstart", onDown as EventListener);
       stackEl.removeEventListener("keydown",    onKeyDown);
     };
-  }, [reduce, applyStart, settle, renderScrub, applyStack, scrollYProgress]);
+    // `played` is in deps so this re-runs after the scrub→plain collapse:
+    // that re-render swaps the stack DOM node, and without a re-bind the drag
+    // listeners would stay attached to the old (removed) node → drag dead.
+  }, [reduce, applyStart, settle, renderScrub, applyStack, scrollYProgress, played]);
 
   // Heading + card stack — shared by both layouts.
   const inner = (

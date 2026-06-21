@@ -107,6 +107,7 @@ const leafFrag = /* glsl */ `
   precision highp float;
   varying vec2 vUv; varying vec3 vN;
   uniform sampler2D tFront; uniform float uFrontMode; uniform float uFrontHas; uniform float uFrontSide; uniform float uFrontAspect; uniform float uFrontCover;
+  uniform sampler2D tBack; uniform float uBackMode; uniform float uBackHas; uniform float uBackSide; uniform float uBackAspect;
   uniform sampler2D tEmboss;
   uniform vec3 uPaper; uniform vec3 uCover; uniform vec3 uBeige;
   vec2 uvForFace(){ return vUv; }
@@ -124,8 +125,17 @@ const leafFrag = /* glsl */ `
       }
       gl_FragColor = vec4(col * (0.6 + 0.4 * lambert), 1.0);
     } else {
-      float g = fract(sin(dot(vUv, vec2(91.7, 47.3))) * 4375.85);
-      vec3 back = uPaper * (0.94 + 0.06 * g);
+      // Back face: render the next page's photo (mirror x) so it's visible
+      // mid-turn instead of popping in at commit. Falls back to paper grain.
+      vec2 buv = vec2(1.0 - vUv.x, vUv.y);
+      vec3 back;
+      if (uBackHas > 0.5 && uBackMode > 0.5) {
+        back = uBackMode < 1.5 ? sampleFull(tBack, buv, uBackAspect, uBeige)
+                               : sampleHalf(tBack, buv, uBackSide, uBackAspect);
+      } else {
+        float g = fract(sin(dot(vUv, vec2(91.7, 47.3))) * 4375.85);
+        back = uPaper * (0.94 + 0.06 * g);
+      }
       gl_FragColor = vec4(back * (0.82 + 0.18 * (1.0 - lambert)), 1.0);
     }
   }
@@ -212,6 +222,8 @@ export default function PageFlipBook() {
         uTurn: { value: 0 }, uCurl: { value: CURL }, uW: { value: W },
         tFront: { value: blankTex }, uFrontMode: { value: 0 }, uFrontHas: { value: 0 },
         uFrontSide: { value: 0 }, uFrontAspect: { value: 1 }, uFrontCover: { value: 0 },
+        tBack: { value: blankTex }, uBackMode: { value: 0 }, uBackHas: { value: 0 },
+        uBackSide: { value: 0 }, uBackAspect: { value: 1 },
         tEmboss: { value: embossTex },
         uPaper: { value: PAPER }, uCover: { value: COVER_RED }, uBeige: { value: BEIGE },
       },
@@ -251,6 +263,9 @@ export default function PageFlipBook() {
       setFace(rs, faceAt(2 * a + 3), "uMode", "uHas", "uSide", "uAspect", "tTex");
       if (a < 0) { (leafProgram.uniforms.uFrontCover.value as number) = 1; (leafProgram.uniforms.uFrontHas.value as number) = 0; }
       else { (leafProgram.uniforms.uFrontCover.value as number) = 0; setFace(lf, faceAt(2 * a + 1), "uFrontMode", "uFrontHas", "uFrontSide", "uFrontAspect", "tFront"); }
+      // back face = next page (faceAt(2a+2)) — painted on the leaf's reverse so
+      // it's visible during the turn instead of popping in at commit.
+      setFace(lf, faceAt(2 * a + 2), "uBackMode", "uBackHas", "uBackSide", "uBackAspect", "tBack");
       // warm neighbours
       const nf = faceAt(2 * a + 2); if (nf.kind !== "blank") loadTexture(nf.src);
       const pf = faceAt(2 * a - 1); if (pf.kind !== "blank") loadTexture(pf.src);
@@ -260,8 +275,14 @@ export default function PageFlipBook() {
     configure(-1);
 
     function commit() {
+      // The active leaf pair is `a`; a === -1 means the turning leaf IS the
+      // cover (opening or shutting). Inner pages get the real page-flip
+      // recording; the cover keeps the synth swish.
+      const a = dir === 1 ? spread : spread - 1;
+      const isCover = a === -1;
       spread = dir === 1 ? Math.min(LAST_SPREAD, spread + 1) : Math.max(-1, spread - 1);
-      restConfigure(); mode = "idle"; playFlip();
+      restConfigure(); mode = "idle";
+      if (isCover) playFlip(); else playPageFlip();
     }
 
     // ---- pointer ----
@@ -299,6 +320,7 @@ export default function PageFlipBook() {
 
     // ---- audio ----
     let actx: AudioContext | null = null; let noiseBuf: AudioBuffer | null = null;
+    let flipBuf: AudioBuffer | null = null;   // real page-flip recording (inner pages)
     function ensureAudio() {
       if (actx) return;
       try {
@@ -307,6 +329,13 @@ export default function PageFlipBook() {
         const len = Math.floor(actx.sampleRate * 0.24); noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
         const d = noiseBuf.getChannelData(0);
         for (let i = 0; i < len; i++) { const t = i / len; d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2.0) * Math.min(1, t * 10); }
+        // decode the real page-flip mp3 once; inner-page turns use it (falls
+        // back to the synth swish until decode finishes).
+        fetch("/assets/sketchbook/page-flip.mp3")
+          .then((r) => r.arrayBuffer())
+          .then((b) => actx!.decodeAudioData(b))
+          .then((buf) => { flipBuf = buf; })
+          .catch(() => {});
       } catch { actx = null; }
     }
     function playFlip() {
@@ -315,6 +344,13 @@ export default function PageFlipBook() {
       const bp = actx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2400; bp.Q.value = 0.7;
       const g = actx.createGain(); g.gain.value = 0.06;
       s.connect(bp).connect(g).connect(actx.destination); s.start();
+    }
+    function playPageFlip() {
+      if (!actx || !flipBuf) { playFlip(); return; }   // not decoded yet → synth
+      const s = actx.createBufferSource(); s.buffer = flipBuf;
+      s.playbackRate.value = 1.94 + Math.random() * 0.12;   // 2x speed, ±3% jitter
+      const g = actx.createGain(); g.gain.value = 0.6;
+      s.connect(g).connect(actx.destination); s.start();
     }
 
     function resize() {
@@ -343,11 +379,19 @@ export default function PageFlipBook() {
       const a = dir === 1 ? spread : spread - 1;
       const openAmt = a === -1 ? Math.min(1, turn) : 1;
       book.position.x = -(1 - openAmt) * (W / 2);
-      leftStatic.visible = !(a === -1 && turn < 0.04);
+      // Hide the left page for the whole cover swing (a === -1): the cover leaf
+      // itself sweeps over to the left as it opens, so the beige left page must
+      // never peek out beside it. It reappears once committed to spread 0.
+      leftStatic.visible = a !== -1;
       (leafProgram.uniforms.uTurn.value as number) = turn;
       // re-pull front texture once it finishes loading
       if (a >= 0 && (leafProgram.uniforms.uFrontCover.value as number) < 0.5 && (leafProgram.uniforms.uFrontHas.value as number) === 0) {
         setFace(leafProgram.uniforms as never, faceAt(2 * a + 1), "uFrontMode", "uFrontHas", "uFrontSide", "uFrontAspect", "tFront");
+      }
+      // re-pull back texture (next page) once it finishes loading
+      if ((leafProgram.uniforms.uBackHas.value as number) === 0) {
+        const bf = faceAt(2 * a + 2);
+        if (bf.kind !== "blank") setFace(leafProgram.uniforms as never, bf, "uBackMode", "uBackHas", "uBackSide", "uBackAspect", "tBack");
       }
       renderer.render({ scene: book, camera });
     }
