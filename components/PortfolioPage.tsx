@@ -172,10 +172,12 @@ export default function PortfolioPage() {
         )}
       </AnimatePresence>
 
-      {/* Footer */}
-      <div style={{ ...centered, marginTop: "200px" }}>
-        <Footer showCta={activeTab !== "about"} />
-      </div>
+      {/* Footer — hidden on About */}
+      {activeTab !== "about" && (
+        <div style={{ ...centered, marginTop: "200px" }}>
+          <Footer showCta />
+        </div>
+      )}
     </main>
   );
 }

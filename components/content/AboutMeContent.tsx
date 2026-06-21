@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import vinoyPortrait from "@/assets/about-me/vinoy-portrait.png";
-import PageFlipBook from "./PageFlipBook";
+import PhotoStack from "./PhotoStack";
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -155,9 +155,9 @@ export default function AboutMeContent() {
         </div>
       </motion.div>
 
-      {/* Sketchbook — WebGL page-flip of personal art/photography */}
+      {/* Scroll-scrub photo stack — travel/work photos */}
       <motion.div {...revealProps(0)} style={{ marginTop: "200px" }}>
-        <PageFlipBook />
+        <PhotoStack />
       </motion.div>
     </div>
   );
