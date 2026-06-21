@@ -116,8 +116,8 @@ export default function PhotoStack() {
         fontFamily: "var(--font-dm-sans)", fontSize: 18, lineHeight: "22px", letterSpacing: "-0.36px", color: "#000",
       }}
     >
-      <p style={{ fontWeight: 600, whiteSpace: "pre-line" }}>{photo.title}</p>
-      <p style={{ fontWeight: 400, marginTop: 4 }}>{photo.location}</p>
+      <p style={{ fontSize: 20, fontWeight: 500, whiteSpace: "pre-line" }}>{photo.title}</p>
+      <p style={{ fontWeight: 400, marginTop: 4, color: "#757575" }}>{photo.location}</p>
     </div>
   );
 
@@ -129,8 +129,8 @@ export default function PhotoStack() {
           <CardImage photo={p0} />
         </div>
         <div style={{ width: 463, textAlign: "center", fontFamily: "var(--font-dm-sans)", fontSize: 18, lineHeight: "22px", letterSpacing: "-0.36px" }}>
-          <p style={{ fontWeight: 600 }}>{p0.title}</p>
-          <p style={{ fontWeight: 400, marginTop: 4 }}>{p0.location}</p>
+          <p style={{ fontSize: 20, fontWeight: 500 }}>{p0.title}</p>
+          <p style={{ fontWeight: 400, marginTop: 4, color: "#757575" }}>{p0.location}</p>
         </div>
       </div>
     );
