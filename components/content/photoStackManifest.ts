@@ -39,8 +39,8 @@ export const PHOTOS: Photo[] = [
   { src: "/assets/photo-stack/single-42b.jpg", aspect: "portrait", title: "Calmly waiting for the Monday Morning Storm", location: "Somewhere near Pune, India" },
   { src: "/assets/photo-stack/double-2.jpg", aspect: "landscape", title: "Colleagues from when I worked at Coditas", location: "Pune, India" },
   { src: "/assets/photo-stack/double-3.jpg", aspect: "landscape", title: "'The Oreo Boys' from Fusepay", location: "Mumbai Airport, India" },
-  { src: "/assets/photo-stack/double-15.jpg", aspect: "landscape", title: "Attending Theyyam Performance", location: "Kannur, India" },
+  { src: "/assets/photo-stack/double-15b.jpg", aspect: "landscape", title: "Attending Theyyam Performance", location: "Kannur, India" },
   { src: "/assets/photo-stack/double-18.jpg", aspect: "landscape", title: "Beach view from the South side", location: "Varkala, India" },
   { src: "/assets/photo-stack/double-23.jpg", aspect: "landscape", title: "Travelled in Water Metro", location: "Fort Kochi, India" },
-  { src: "/assets/photo-stack/double-28.jpg", aspect: "landscape", title: "Met some brightest minds in Neuro-fields\nFrom Japan, Korea, and Bengaluru", location: "Alleppey, India" },
+  { src: "/assets/photo-stack/double-28.jpg", aspect: "landscape", title: "Met some brightest minds in Neuro-fields\nfrom Japan, Korea, and Bengaluru", location: "Alleppey, India" },
 ];

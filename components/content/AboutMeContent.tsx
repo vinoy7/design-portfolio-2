@@ -156,7 +156,7 @@ export default function AboutMeContent() {
       </motion.div>
 
       {/* Scroll-scrub photo stack — travel/work photos */}
-      <motion.div {...revealProps(0)} style={{ marginTop: "200px" }}>
+      <motion.div {...revealProps(0)} style={{ marginTop: "200px", marginBottom: "-20px" }}>
         <PhotoStack />
       </motion.div>
     </div>
