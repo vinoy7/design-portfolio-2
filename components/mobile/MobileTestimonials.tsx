@@ -299,17 +299,6 @@ export default function MobileTestimonials() {
         })}
       </div>
 
-      <p style={{
-        textAlign:   "center",
-        fontFamily:  "var(--font-dm-sans)",
-        fontWeight:  400,
-        fontSize:    "13px",
-        lineHeight:  "18px",
-        color:       "#b0b0b0",
-        marginTop:   "16px",
-      }}>
-        Swipe to read more
-      </p>
     </div>
   );
 }

@@ -12,19 +12,27 @@ import { PHOTOS, type Photo } from "@/components/content/photoStackManifest";
 
 const N = PHOTOS.length;
 const DEPTH = 5;
-const EASE = 0.16;            // roll speed toward target on release
 const SWIPE_DIST = 110;       // px of horizontal drag == one photo
+// Spring settle (Apple-ish, near-critically damped → smooth, no bounce).
+const STIFF = 190;
+const DAMP  = 27;
+const PROJECT = 0.16;         // s of velocity look-ahead → flick carries to next
+const MAX_VEL = 12;           // pos/sec cap → one bad frame can't fling the stack
+const MAX_PROJ = 1.5;         // momentum adds at most ~1-2 photos past release
+
+// smoothstep: less time lingering at the muddy 50/50 crossfade midpoint
+const smooth = (t: number) => t * t * (3 - 2 * t);
 
 type Slot = { w: number; h: number; dy: number; blur: number; op: number };
 // Desktop slots scaled ~0.65 (460→300 front width); dy/blur kept proportional.
 const SLOTS: Record<number, Slot> = {
-  [-1]: { w: 300, h: 378, dy: 46, blur: 8, op: 0 },
+  [-1]: { w: 300, h: 378, dy: 46, blur: 6, op: 0 },
   0:    { w: 300, h: 378, dy: 0,   blur: 0,  op: 1 },
-  1:    { w: 274, h: 342, dy: -34, blur: 5,  op: 1 },
-  2:    { w: 254, h: 317, dy: -60, blur: 5,  op: 0.95 },
-  3:    { w: 238, h: 297, dy: -82, blur: 8,  op: 0.7 },
-  4:    { w: 225, h: 280, dy: -102,blur: 11, op: 0.4 },
-  5:    { w: 215, h: 267, dy: -117,blur: 13, op: 0 },
+  1:    { w: 274, h: 342, dy: -34, blur: 3,  op: 1 },
+  2:    { w: 254, h: 317, dy: -60, blur: 3,  op: 0.95 },
+  3:    { w: 238, h: 297, dy: -82, blur: 6,  op: 0.7 },
+  4:    { w: 225, h: 280, dy: -102,blur: 9, op: 0.4 },
+  5:    { w: 215, h: 267, dy: -117,blur: 11, op: 0 },
 };
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -67,6 +75,8 @@ export default function MobilePhotoStack() {
 
   const posRef    = useRef(0);     // continuous position [0, N-1]
   const targetRef = useRef(0);
+  const velRef    = useRef(0);     // pos units / sec (carries flick momentum)
+  const lastTRef  = useRef(0);
   const rafRef    = useRef<number | null>(null);
   const lastCi    = useRef(0);
   const wrapRef   = useRef<HTMLDivElement>(null);
@@ -90,20 +100,32 @@ export default function MobilePhotoStack() {
     });
 
     const cur = capCurRef.current, nxt = capNextRef.current;
-    if (cur) { cur.style.opacity = String(1 - f); cur.style.filter = `blur(${f * 6}px)`; }
-    if (nxt) { nxt.style.opacity = String(f);     nxt.style.filter = `blur(${(1 - f) * 6}px)`; }
+    const e = smooth(f);
+    if (cur) { cur.style.opacity = String(1 - e); cur.style.filter = `blur(${e * 6}px)`; }
+    if (nxt) { nxt.style.opacity = String(e);     nxt.style.filter = `blur(${(1 - e) * 6}px)`; }
   }, []);
 
+  // Spring settle toward the integer target, seeded with release velocity.
+  // Frame-rate independent; interruptible (retarget + keep velocity mid-flight).
   const startRoll = useCallback(() => {
     if (rafRef.current != null) return;
-    const step = () => {
+    lastTRef.current = performance.now();
+    const step = (now: number) => {
+      let dt = (now - lastTRef.current) / 1000;
+      lastTRef.current = now;
+      if (dt > 0.032) dt = 0.032;        // clamp → no blow-ups on a stalled frame
       const target = targetRef.current;
-      let pos = posRef.current + (target - posRef.current) * EASE;
-      if (Math.abs(target - pos) < 0.002) pos = target;
+      const x = posRef.current - target;
+      const a = -STIFF * x - DAMP * velRef.current;
+      velRef.current += a * dt;
+      let pos = posRef.current + velRef.current * dt;
+      if (Math.abs(pos - target) < 0.001 && Math.abs(velRef.current) < 0.02) {
+        pos = target; velRef.current = 0;
+        posRef.current = pos; renderScrub(pos); rafRef.current = null; return;
+      }
       posRef.current = pos;
       renderScrub(pos);
-      if (pos !== target) rafRef.current = requestAnimationFrame(step);
-      else rafRef.current = null;
+      rafRef.current = requestAnimationFrame(step);
     };
     rafRef.current = requestAnimationFrame(step);
   }, [renderScrub]);
@@ -112,7 +134,8 @@ export default function MobilePhotoStack() {
   useEffect(() => {
     if (reduce) return;
 
-    const drag = { active: false, startX: 0, startY: 0, base: 0, horizontal: false };
+    const drag = { active: false, startX: 0, startY: 0, base: 0, horizontal: false,
+                   lastPos: 0, lastT: 0, vel: 0 };
 
     function onDown(e: MouseEvent | TouchEvent) {
       if (e instanceof MouseEvent && e.button !== 0) return;
@@ -123,6 +146,10 @@ export default function MobilePhotoStack() {
       drag.startY = pt.clientY;
       drag.base   = Math.round(posRef.current);
       drag.horizontal = false;
+      drag.lastPos = posRef.current;
+      drag.lastT   = performance.now();
+      drag.vel     = 0;
+      velRef.current = 0;
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup",   onUp);
       document.addEventListener("touchmove", onMove, { passive: false });
@@ -141,8 +168,16 @@ export default function MobilePhotoStack() {
         drag.horizontal = true;
       }
       if (e.cancelable) e.preventDefault();
-      // swipe left (dx<0) → advance forward
-      const pos = Math.max(0, Math.min(N - 1, drag.base - dx / SWIPE_DIST));
+      // swipe right (dx>0) → advance forward
+      const pos = Math.max(0, Math.min(N - 1, drag.base + dx / SWIPE_DIST));
+      // running velocity estimate (pos units/sec), smoothed → stable flick read
+      const now = performance.now();
+      const dtv = (now - drag.lastT) / 1000;
+      if (dtv > 0) {
+        const v = (pos - drag.lastPos) / dtv;
+        drag.vel = drag.vel * 0.7 + v * 0.3;
+        drag.lastPos = pos; drag.lastT = now;
+      }
       posRef.current = pos;
       renderScrub(pos);
     }
@@ -158,9 +193,15 @@ export default function MobilePhotoStack() {
       if (!drag.active) { cleanup(); return; }
       drag.active = false;
       cleanup();
-      // snap to nearest, but a decisive swipe always moves at least one
+      // momentum: project where the flick is heading, settle to that photo.
+      // Both the seed velocity and the look-ahead are capped so a single bad
+      // frame (huge dpos/dt) can't fling the stack across many photos.
+      const v = Math.max(-MAX_VEL, Math.min(MAX_VEL, drag.vel));
+      velRef.current = v;
+      const projAdd = Math.max(-MAX_PROJ, Math.min(MAX_PROJ, v * PROJECT));
+      let tgt = Math.round(posRef.current + projAdd);
+      // a decisive but short swipe still advances at least one
       const moved = posRef.current - drag.base;
-      let tgt = Math.round(posRef.current);
       if (Math.abs(moved) > 0.18 && tgt === drag.base) tgt = drag.base + (moved > 0 ? 1 : -1);
       targetRef.current = Math.max(0, Math.min(N - 1, tgt));
       startRoll();
@@ -255,13 +296,6 @@ export default function MobilePhotoStack() {
         <Caption photo={PHOTOS[c]} refEl={capCurRef} initialOpacity={1} />
         {c + 1 < N && <Caption photo={PHOTOS[c + 1]} refEl={capNextRef} initialOpacity={0} />}
       </div>
-
-      <p style={{
-        textAlign: "center", fontFamily: "var(--font-dm-sans)", fontWeight: 400,
-        fontSize: 13, lineHeight: "18px", color: "#b0b0b0", marginTop: 12,
-      }}>
-        Swipe to see more
-      </p>
     </div>
   );
 }
