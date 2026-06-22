@@ -5,9 +5,9 @@ import { motion } from "motion/react";
 export type MobileTab = "work" | "playground" | "about";
 
 const TABS: { id: MobileTab; label: string }[] = [
-  { id: "work",       label: "Work"       },
-  { id: "playground", label: "Playground" },
-  { id: "about",      label: "About Me"   },
+  { id: "work",  label: "Work"     },
+  { id: "about", label: "About Me" },
+  // ponytail: Playground hidden for now — re-add { id:"playground", label:"Playground" } to restore
 ];
 
 const PILL_BG = "#f5eee2";

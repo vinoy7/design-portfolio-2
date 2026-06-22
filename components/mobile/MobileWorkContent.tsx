@@ -74,9 +74,9 @@ function CardSubtitle({ children }: { children: React.ReactNode }) {
     <p style={{
       fontFamily:    "var(--font-dm-sans)",
       fontWeight:    400,
-      fontSize:      "15px",
-      lineHeight:    "22px",
-      letterSpacing: "-0.15px",
+      fontSize:      "16px",
+      lineHeight:    "24px",
+      letterSpacing: "-0.16px",
       color:         "#757575",
     }}>
       {children}
@@ -90,8 +90,8 @@ function ViewCaseStudy() {
       <span style={{
         fontFamily:    "var(--font-dm-sans)",
         fontWeight:    500,
-        fontSize:      "15px",
-        lineHeight:    "22px",
+        fontSize:      "16px",
+        lineHeight:    "24px",
         color:         "#b48a42",
         whiteSpace:    "nowrap",
       }}>
@@ -161,7 +161,7 @@ function Card({ href, meta, title, subtitle, image, badge, delay=0, reduce=false
       </div>
 
       {badge && (
-        <div style={{ position:"absolute", top:0, right:0, background:"#f5e7ce", padding:"4px 12px" }}>
+        <div style={{ position:"absolute", top:0, right:0, background:"#f5e7ce", padding:"4px 12px", textAlign:"center" }}>
           <span style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"13px", lineHeight:"18px", color:"#000" }}>
             {badge}
           </span>

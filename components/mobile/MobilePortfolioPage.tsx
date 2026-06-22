@@ -6,6 +6,7 @@ import Image from "next/image";
 import MobileHero        from "./MobileHero";
 import MobileTabNav, { type MobileTab } from "./MobileTabNav";
 import MobileWorkContent from "./MobileWorkContent";
+import MobileAboutContent from "./MobileAboutContent";
 import MobileTestimonials from "./MobileTestimonials";
 import BookACallButton   from "@/components/BookACallButton";
 import ctaBg             from "@/assets/about-me/cta-bg-texture.png";
@@ -18,28 +19,6 @@ const TAB_BIO: Record<MobileTab, string> = {
   playground: "The Playground is a collection of experiments, explorations, and interface ideas that didn't quite make it into the final case studies, but still felt worth sharing. Some are unfinished concepts, while others are quick iterations created out of curiosity or spontaneous ideas.",
   about:      "",
 };
-
-// Simple "in progress" placeholder for tabs without mobile content yet
-function ComingSoon({ tab }: { tab: MobileTab }) {
-  const label = tab === "playground" ? "Playground" : "About Me";
-  return (
-    <div style={{ paddingTop:"48px", paddingBottom:"48px", display:"flex", flexDirection:"column", alignItems:"center", gap:"12px" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/assets/icons/Logo.svg" alt="" width={40} height={40} style={{ opacity:0.35 }} />
-      <p style={{
-        fontFamily:  "var(--font-dm-sans)",
-        fontWeight:  400,
-        fontSize:    "16px",
-        lineHeight:  "24px",
-        color:       "#b0b0b0",
-        textAlign:   "center",
-        maxWidth:    "240px",
-      }}>
-        {label} mobile version is being developed.
-      </p>
-    </div>
-  );
-}
 
 // Inline mobile footer (Footer.tsx bar layout doesn't fit 343px)
 function MobileFooterCta() {
@@ -203,9 +182,8 @@ export default function MobilePortfolioPage() {
             transition={{ duration: 0.55, ease: EASE }}
             style={{ marginBottom:"48px" }}
           >
-            {activeTab === "work"       && <MobileWorkContent />}
-            {activeTab === "playground" && <ComingSoon tab="playground" />}
-            {activeTab === "about"      && <ComingSoon tab="about" />}
+            {activeTab === "work"  && <MobileWorkContent />}
+            {activeTab === "about" && <MobileAboutContent />}
           </motion.div>
         </AnimatePresence>
 
@@ -217,8 +195,8 @@ export default function MobilePortfolioPage() {
         )}
       </div>
 
-      {/* CTA + footer — full-bleed, outside the centered container */}
-      <MobileFooterCta />
+      {/* CTA + footer — full-bleed, outside the centered container. Hidden on About (matches desktop). */}
+      {activeTab !== "about" && <MobileFooterCta />}
     </main>
   );
 }

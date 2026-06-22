@@ -178,7 +178,7 @@ export default function MobileTestimonials() {
         <p style={{
           fontFamily:"var(--font-averia)", fontWeight:400,
           fontSize:"28px", lineHeight:"36px", letterSpacing:"-0.56px", color:"#000",
-          marginBottom:"8px",
+          textAlign:"center", marginBottom:"8px",
         }}>
           What it&apos;s like working with me?
         </p>
@@ -212,6 +212,7 @@ export default function MobileTestimonials() {
         lineHeight:    "36px",
         letterSpacing: "-0.56px",
         color:         "#000",
+        textAlign:     "center",
         marginBottom:  "32px",
       }}>
         What it&apos;s like working with me?
