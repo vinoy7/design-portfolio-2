@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+// ponytail: dynamic+ssr:false so the canvas/physics bundle is excluded from the desktop bundle
+const MobilePortfolioPage = dynamic(
+  () => import("./mobile/MobilePortfolioPage"),
+  { ssr: false, loading: () => null }
+);
 
 type Device = "mobile" | "tablet" | "desktop";
 
@@ -72,7 +79,7 @@ export default function DeviceGate({ children }: { children: React.ReactNode }) 
 
   // null until mounted -> avoids hydration mismatch and wrong-screen flash
   if (device === null) return null;
-  if (device === "mobile") return <MessageScreen variant="mobile" />;
+  if (device === "mobile") return <MobilePortfolioPage />;
   if (device === "tablet") return <MessageScreen variant="tablet" />;
   return <>{children}</>;
 }
