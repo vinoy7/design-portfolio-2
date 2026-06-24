@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Averia_Serif_Libre, DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import TabTeaser from "@/components/TabTeaser";
 
@@ -50,6 +51,13 @@ export default function RootLayout({
       className={`${averiaSerifLibre.variable} ${dmSans.variable} antialiased`}
     >
       <body>
+        <Script id="ms-clarity" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "xbwtm4oyp8");`}
+        </Script>
         <TabTeaser />
         {children}
       </body>
