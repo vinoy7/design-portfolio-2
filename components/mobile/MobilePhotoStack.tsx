@@ -234,7 +234,7 @@ export default function MobilePhotoStack() {
       style={{
         position: "absolute", left: "50%", top: 0, transform: "translateX(-50%)",
         width: "100%", textAlign: "center", opacity: initialOpacity,
-        fontFamily: "var(--font-dm-sans)", fontSize: 15, lineHeight: "20px", letterSpacing: "-0.3px", color: "#000",
+        fontFamily: "var(--font-dm-sans)", fontSize: 16, lineHeight: "20px", letterSpacing: "-0.3px", color: "#000",
       }}
     >
       <p style={{ fontSize: 16, fontWeight: 500, whiteSpace: "pre-line" }}>{photo.title}</p>
@@ -249,7 +249,7 @@ export default function MobilePhotoStack() {
         <div style={{ position: "relative", width: 300, height: 378, background: p0.aspect === "landscape" ? "#000" : "#eaeaea", overflow: "hidden" }}>
           <CardImage photo={p0} />
         </div>
-        <div style={{ width: "100%", textAlign: "center", fontFamily: "var(--font-dm-sans)", fontSize: 15, lineHeight: "20px" }}>
+        <div style={{ width: "100%", textAlign: "center", fontFamily: "var(--font-dm-sans)", fontSize: 16, lineHeight: "20px" }}>
           <p style={{ fontSize: 16, fontWeight: 500 }}>{p0.title}</p>
           <p style={{ fontWeight: 400, marginTop: 4, color: "#757575" }}>{p0.location}</p>
         </div>

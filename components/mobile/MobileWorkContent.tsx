@@ -21,8 +21,8 @@ const CARD_BORDER = "1px solid #e6e6e6";
 const META: React.CSSProperties = {
   fontFamily: "var(--font-dm-sans)",
   fontWeight: 500,
-  fontSize:   "13px",
-  lineHeight: "18px",
+  fontSize:   "12px",
+  lineHeight: "20px",
   color:      "#888",
 };
 
@@ -33,13 +33,13 @@ function Dot() {
 }
 function Divider() {
   return (
-    <span style={{ display:"inline-block", width:"1px", height:"14px", background:"#d9d9d9", borderRadius:"1px", flexShrink:0 }} />
+    <span style={{ display:"inline-block", width:"1px", height:"16px", background:"#d9d9d9", borderRadius:"1px", flexShrink:0 }} />
   );
 }
 
 function MetaRow({ tags, date }: { tags: string[]; date: string }) {
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:"10px", flexWrap:"wrap" }}>
+    <div style={{ display:"flex", alignItems:"center", gap:"12px", flexWrap:"wrap" }}>
       <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
         {tags.map((tag, i) => (
           <span key={tag} style={{ display:"flex", alignItems:"center", gap:"8px" }}>
@@ -59,7 +59,7 @@ function CardTitle({ children }: { children: React.ReactNode }) {
     <p style={{
       fontFamily:    "var(--font-averia)",
       fontWeight:    400,
-      fontSize:      "22px",
+      fontSize:      "24px",
       lineHeight:    "28px",
       letterSpacing: "-0.44px",
       color:         "#000",
@@ -86,7 +86,7 @@ function CardSubtitle({ children }: { children: React.ReactNode }) {
 
 function ViewCaseStudy() {
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:"6px" }}>
+    <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
       <span style={{
         fontFamily:    "var(--font-dm-sans)",
         fontWeight:    500,
@@ -151,7 +151,7 @@ function Card({ href, meta, title, subtitle, image, badge, delay=0, reduce=false
       {/* Text panel */}
       <div style={{ padding:"24px 20px 20px", display:"flex", flexDirection:"column", gap:"12px" }}>
         <MetaRow tags={meta.tags} date={meta.date} />
-        <div style={{ display:"flex", flexDirection:"column", gap:"6px" }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
           <CardTitle>{title}</CardTitle>
           <CardSubtitle>{subtitle}</CardSubtitle>
         </div>
@@ -162,7 +162,7 @@ function Card({ href, meta, title, subtitle, image, badge, delay=0, reduce=false
 
       {badge && (
         <div style={{ position:"absolute", top:0, right:0, background:"#f5e7ce", padding:"4px 12px", textAlign:"center" }}>
-          <span style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"13px", lineHeight:"18px", color:"#000" }}>
+          <span style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"12px", lineHeight:"20px", color:"#000" }}>
             {badge}
           </span>
         </div>

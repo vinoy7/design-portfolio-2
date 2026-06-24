@@ -38,14 +38,14 @@ export default function MobileTabNav({ active, onChange }: Props) {
             onClick={() => onChange(tab.id)}
             style={{
               position:        "relative",
-              padding:         "8px 18px",
+              padding:         "8px 20px",
               border:          "none",
               background:      "transparent",
               cursor:          "pointer",
               borderRadius:    "18px",
               fontFamily:      "var(--font-dm-sans)",
               fontWeight:      isActive ? 700 : 400,
-              fontSize:        "15px",
+              fontSize:        "16px",
               lineHeight:      "20px",
               letterSpacing:   "-0.15px",
               color:           "#000",

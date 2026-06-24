@@ -34,6 +34,7 @@ function MobileFooterCta() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          margin: "0 16px",
         }}
       >
         <div style={{ position:"absolute", inset:0 }}>
@@ -43,8 +44,8 @@ function MobileFooterCta() {
           <div style={{
             fontFamily:    "var(--font-averia)",
             fontWeight:    400,
-            fontSize:      "24px",
-            lineHeight:    "32px",
+            fontSize:      "20px",
+            lineHeight:    "24px",
             letterSpacing: "-0.48px",
             color:         "#000",
             textAlign:     "center",
@@ -52,12 +53,12 @@ function MobileFooterCta() {
             <p>{"Let's get in touch"}</p>
             <p>and bring your idea to life</p>
           </div>
-          <BookACallButton />
+          <BookACallButton compact />
         </div>
       </div>
 
       {/* Footer links */}
-      <div style={{ paddingTop:"32px", paddingBottom:"32px", display:"flex", flexDirection:"column", gap:"24px", alignItems:"center" }}>
+      <div style={{ paddingTop:"60px", paddingBottom:"32px", display:"flex", flexDirection:"column", gap:"24px", alignItems:"center" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"0", width:"100%" }}>
           {[
             { label:"Email",    href:"mailto:vinoy.248@gmail.com", external:false },
@@ -73,7 +74,7 @@ function MobileFooterCta() {
                 fontFamily:     "var(--font-dm-sans)",
                 fontWeight:     400,
                 fontSize:       "16px",
-                lineHeight:     "22px",
+                lineHeight:     "24px",
                 color:          "#000",
                 textDecoration: "none",
                 flex:           1,
@@ -90,12 +91,12 @@ function MobileFooterCta() {
         <p style={{
           fontFamily: "var(--font-dm-sans)",
           fontWeight: 400,
-          fontSize:   "14px",
-          lineHeight: "20px",
+          fontSize:   "16px",
+          lineHeight: "24px",
           color:      "#000",
           textAlign:  "center",
         }}>
-          © 2026 Vinoy Varghese
+          © 2026 Vinoy Varghese.
         </p>
       </div>
     </div>
@@ -180,7 +181,7 @@ export default function MobilePortfolioPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.2, ease: EASE } }}
             transition={{ duration: 0.55, ease: EASE }}
-            style={{ marginBottom:"48px" }}
+            style={{ marginBottom:"60px" }}
           >
             {activeTab === "work"  && <MobileWorkContent />}
             {activeTab === "about" && <MobileAboutContent />}
@@ -189,7 +190,7 @@ export default function MobilePortfolioPage() {
 
         {/* Testimonials — work tab only */}
         {activeTab === "work" && (
-          <div style={{ marginBottom:"48px" }}>
+          <div style={{ marginBottom:"60px" }}>
             <MobileTestimonials />
           </div>
         )}

@@ -2,7 +2,11 @@
 
 import { motion } from "motion/react";
 
-export default function BookACallButton() {
+export default function BookACallButton({ compact = false }: { compact?: boolean }) {
+  const sz = compact ? "16px" : "20px";
+  const lh = compact ? "22px" : "32px";
+  const clipH = compact ? 22 : 32;
+
   return (
     <motion.a
       href="https://cal.com/vinoy7/30min"
@@ -22,7 +26,7 @@ export default function BookACallButton() {
       }}
     >
       {/* overflow-hidden on a plain div so clipping is reliable */}
-      <div style={{ height: "32px", overflow: "hidden" }}>
+      <div style={{ height: `${clipH}px`, overflow: "hidden" }}>
         <motion.div
           variants={{
             rest: { y: 0 },
@@ -35,11 +39,11 @@ export default function BookACallButton() {
             style={{
               fontFamily: "var(--font-dm-sans)",
               fontWeight: 500,
-              fontSize: "20px",
-              lineHeight: "32px",
+              fontSize: sz,
+              lineHeight: lh,
               letterSpacing: "-0.4px",
               color: "#f5eee2",
-              height: "32px",
+              height: `${clipH}px`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -50,9 +54,9 @@ export default function BookACallButton() {
           <span
             style={{
               fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
-              fontSize: "20px",
-              lineHeight: "32px",
-              height: "32px",
+              fontSize: sz,
+              lineHeight: lh,
+              height: `${clipH}px`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

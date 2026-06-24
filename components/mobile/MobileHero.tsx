@@ -22,7 +22,7 @@ export default function MobileHero() {
         transition={{ duration: 1.1, ease: EASE }}
         style={{
           fontFamily:    "var(--font-averia)",
-          fontSize:      "30px",
+          fontSize:      "32px",
           lineHeight:    "36px",
           letterSpacing: "-1.2px",
           color:         "#000",

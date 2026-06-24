@@ -2,10 +2,6 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useReducedMotion } from "motion/react";
-import parasAryaPhoto     from "@/assets/about-me/testimonials/paras-arya.png";
-import kenRodriguesPhoto  from "@/assets/about-me/testimonials/ken-rodrigues.png";
-import shivamDewanPhoto   from "@/assets/about-me/testimonials/shivam-dewan.png";
-import francescoRocchiPhoto from "@/assets/about-me/testimonials/francesco-rocchi.png";
 
 const TESTIMONIALS = [
   {
@@ -13,28 +9,24 @@ const TESTIMONIALS = [
     quote: "Vinoy is a great team player, very proactive and full of good ideas. We hired him for framer implementation, which he did eloquently well and also contributed a lot to design of the product as well. Highly recommended.",
     name:  "Paras Arya",
     role:  "Co-Founder, Design Originals Club",
-    photo: parasAryaPhoto,
   },
   {
     id:    "ken",
     quote: "Vinoy has been a key part of multiple projects I've led, always contributes greatly to the success of each. His attention to detail and dedication makes him a reliable team member who is always willing to go the extra mile. Vinoy is an asset to any team that he is a part of.",
     name:  "Ken Rodrigues",
     role:  "Ex-Senior UX Designer, Coditas",
-    photo: kenRodriguesPhoto,
   },
   {
     id:    "shivam",
     quote: "Vinoy is a quick learner and always up to new challenges. He first tries to understand the problem from the ground then only gets to the pixel. He's good at insight gathering, talking to users, rapid wireframing. He's always open to feedback.",
     name:  "Shivam Dewan",
     role:  "Ex-Lead Designer, Being",
-    photo: shivamDewanPhoto,
   },
   {
     id:    "francesco",
     quote: "Across all our products, Vinoy made sure what got built actually matched what was designed. He genuinely lifts the energy of a team. He's one of those people you actually look forward to jumping on a call with. If you get the chance to work with him, take it.",
     name:  "Francesco Rocchi",
     role:  "Co-founder & CTO, Fusepay",
-    photo: francescoRocchiPhoto,
   },
 ];
 
@@ -177,7 +169,7 @@ export default function MobileTestimonials() {
       <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
         <p style={{
           fontFamily:"var(--font-averia)", fontWeight:400,
-          fontSize:"28px", lineHeight:"36px", letterSpacing:"-0.56px", color:"#000",
+          fontSize:"clamp(24px, 6vw, 28px)", lineHeight:"clamp(28px, 7vw, 36px)", letterSpacing:"-0.5px", color:"#000",
           textAlign:"center", marginBottom:"8px",
         }}>
           What it&apos;s like working with me?
@@ -190,12 +182,12 @@ export default function MobileTestimonials() {
               padding:"24px 20px", display:"flex", flexDirection:"column", gap:"16px",
             }}
           >
-            <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:400, fontSize:"15px", lineHeight:"22px", color:"#797979" }}>
+            <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:400, fontSize:"16px", lineHeight:"24px", color:"#797979" }}>
               &ldquo;{t.quote}&rdquo;
             </p>
             <div>
-              <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"16px", lineHeight:"22px", color:"#000" }}>{t.name}</p>
-              <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:400, fontSize:"13px", lineHeight:"18px", color:"#797979" }}>({t.role})</p>
+              <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"16px", lineHeight:"24px", color:"#000" }}>{t.name}</p>
+              <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:400, fontSize:"12px", lineHeight:"20px", color:"#797979" }}>({t.role})</p>
             </div>
           </div>
         ))}
@@ -208,9 +200,9 @@ export default function MobileTestimonials() {
       <p style={{
         fontFamily:    "var(--font-averia)",
         fontWeight:    400,
-        fontSize:      "28px",
-        lineHeight:    "36px",
-        letterSpacing: "-0.56px",
+        fontSize:      "clamp(22px, 6vw, 28px)",
+        lineHeight:    "clamp(28px, 7vw, 36px)",
+        letterSpacing: "-0.5px",
         color:         "#000",
         textAlign:     "center",
         marginBottom:  "32px",
@@ -263,8 +255,8 @@ export default function MobileTestimonials() {
               <p style={{
                 fontFamily: "var(--font-dm-sans)",
                 fontWeight: 400,
-                fontSize:   "15px",
-                lineHeight: "22px",
+                fontSize:   "16px",
+                lineHeight: "24px",
                 color:      "#797979",
                 flex:       1,
               }}>
@@ -274,24 +266,12 @@ export default function MobileTestimonials() {
               {/* Attribution */}
               <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between" }}>
                 <div>
-                  <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"16px", lineHeight:"22px", letterSpacing:"-0.16px", color:"#000" }}>
+                  <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:500, fontSize:"16px", lineHeight:"24px", letterSpacing:"-0.16px", color:"#000" }}>
                     {t.name}
                   </p>
-                  <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:400, fontSize:"13px", lineHeight:"18px", color:"#797979" }}>
+                  <p style={{ fontFamily:"var(--font-dm-sans)", fontWeight:400, fontSize:"12px", lineHeight:"20px", color:"#797979" }}>
                     ({t.role})
                   </p>
-                </div>
-                {/* Small photo thumbnail */}
-                <div style={{
-                  width:"52px", height:"52px", borderRadius:"50%",
-                  overflow:"hidden", flexShrink:0, background:"#f2f2f2",
-                }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={t.photo.src}
-                    alt={t.name}
-                    style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top" }}
-                  />
                 </div>
               </div>
             </div>
