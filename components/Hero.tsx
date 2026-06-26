@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import heroPhoto from "@/assets/about-me/hero-vinoy-photo.png";
 import HeroDots from "./HeroDots";
@@ -11,6 +11,8 @@ const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 export default function Hero() {
   const reduce = useReducedMotion();
   const dotsAnchor = useRef<HTMLDivElement>(null);
+  const [dotClicks, setDotClicks] = useState(0);
+  const [dotsSettled, setDotsSettled] = useState(false);
 
   return (
     <div className="relative w-full" style={{ height: "510px" }}>
@@ -53,7 +55,7 @@ export default function Hero() {
             fontSize: "16px",
             lineHeight: "24px",
             letterSpacing: "-0.16px",
-            color: "#636363",
+            color: "#757575",
           }}
         >
           My passion for design and creativity has led me to work in various
@@ -134,7 +136,30 @@ export default function Hero() {
               />
             </div>
           </div>
-          <HeroDots anchorRef={dotsAnchor} src={heroPhoto.src} />
+          <HeroDots anchorRef={dotsAnchor} src={heroPhoto.src} onClickCount={setDotClicks} onSettled={() => setDotsSettled(true)} />
+          {/* hint text — lives behind canvas (z<50), revealed by hover repel gaps */}
+          <div
+            style={{
+              position: "absolute",
+              left: "calc(50% + 10px)",
+              top: "265px",
+              width: "510px",
+              height: "245px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "var(--font-dm-sans)",
+              fontWeight: 400,
+              fontSize: "20px",
+              lineHeight: "28px",
+              color: "#757575",
+              pointerEvents: "none",
+              opacity: !dotsSettled || dotClicks >= 4 ? 0 : 1,
+              transition: "opacity 0.8s ease",
+            }}
+          >
+            Click here 5 times
+          </div>
         </>
       )}
     </div>

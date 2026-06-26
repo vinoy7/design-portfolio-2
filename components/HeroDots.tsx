@@ -34,7 +34,7 @@ const IDLE_STIFF = 130;
 const IDLE_DAMP = 14;
 const INTRO_STIFF = 38; // low -> dots drift slowly into place
 const GRAVITY = 40; // gentle drift during the hold
-const BURST_HOLD = 10; // seconds dots stay scattered after the blast
+const BURST_HOLD = 5; // seconds dots stay scattered after the blast
 
 // vortex (3D globe, viewed down the z-axis)
 const GATHER_DUR = 1.0; // scattered dots gather onto the globe
@@ -61,12 +61,20 @@ export default function HeroDots({
   anchorRef,
   src,
   startDelay = 0,
+  onClickCount,
+  onSettled,
 }: {
   anchorRef: React.RefObject<HTMLDivElement | null>;
   src: string;
   startDelay?: number;
+  onClickCount?: (n: number) => void;
+  onSettled?: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const onClickCountRef = useRef(onClickCount);
+  const onSettledRef = useRef(onSettled);
+  useEffect(() => { onClickCountRef.current = onClickCount; }, [onClickCount]);
+  useEffect(() => { onSettledRef.current = onSettled; }, [onSettled]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -258,6 +266,7 @@ export default function HeroDots({
     // ---- impulses ----
     function clickImpulse(cx: number, cy: number) {
       clicks++;
+      onClickCountRef.current?.(clicks);
       if (clicks >= 5) {
         triggerBurst();
         return;
@@ -474,6 +483,7 @@ export default function HeroDots({
           phase = "idle";
           stiff = IDLE_STIFF;
           damp = IDLE_DAMP;
+          onSettledRef.current?.();
         }
       }
 
