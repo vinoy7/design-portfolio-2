@@ -203,8 +203,6 @@ export default function WorkContent() {
       <motion.a
         {...revealProps(0)}
         href={CASE_STUDY_LINKS.fusepay}
-        target="_blank"
-        rel="noopener noreferrer"
         className="flex overflow-hidden"
         style={{ background: "#fff", /* borderRadius: "12px", */ border: CARD_BORDER, textDecoration: "none", color: "inherit" }}
         onMouseEnter={() => setHovered1(true)}

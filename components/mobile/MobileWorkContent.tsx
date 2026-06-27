@@ -130,8 +130,7 @@ function Card({ href, meta, title, subtitle, image, badge, delay=0, reduce=false
     <motion.a
       {...revealProps(delay, reduce)}
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       style={{
         display:        "flex",
         flexDirection:  "column",
