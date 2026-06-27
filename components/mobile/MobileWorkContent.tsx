@@ -179,7 +179,7 @@ export default function MobileWorkContent() {
       {/* Card 1: Fusepay */}
       <Card
         href={CASE_STUDY_LINKS.fusepay}
-        meta={{ tags:["B2B","FinTech"], date:"Jan 2025 - Present" }}
+        meta={{ tags:["B2B","FinTech"], date:"Jan 2025 - May 2026" }}
         title="Designing Trust at Fusepay"
         subtitle="Digitizing a decades-Old B2B Payment Workflow in Seychelles"
         badge="Latest"

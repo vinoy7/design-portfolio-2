@@ -215,6 +215,41 @@
       opacity: 1;
     }
 
+    /* ── Project meta (timeline / role / collaborators) ─────── */
+    .cs-meta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .cs-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .cs-meta__col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .cs-meta__label {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 26px;
+      letter-spacing: -0.01em;
+      color: var(--ink-soft);
+    }
+
+    .cs-meta__value {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 26px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
     /* ── Toggle pills ───────────────────────────────────────── */
     .cs-toggle {
       display: flex;
@@ -868,6 +903,7 @@
     /* ── Entrance animation initial states ──────────────────── */
     .anim-header,
     .anim-hero,
+    .anim-meta,
     .anim-toggle,
     .anim-footer {
       opacity: 0;
@@ -944,11 +980,15 @@
       .cs-desc     { font-size: 16px; margin-top: 8px; }
 
       .cs-hero {
-        height: 180px;
+        height: 200px;
         border-radius: 6px;
       }
 
       .cs-section-heading { font-size: 20px; }
+
+      .cs-meta { grid-template-columns: 1fr; gap: 20px; }
+      .cs-meta__label, .cs-meta__value { font-size: 16px; line-height: 24px; }
+      .cs-meta-block { gap: 24px; }
 
       .cs-body { font-size: 16px; }
 
@@ -1024,7 +1064,7 @@
 
     /* ── Reduced motion ─────────────────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
-      .anim-header, .anim-hero, .anim-toggle, .anim-footer,
+      .anim-header, .anim-hero, .anim-meta, .anim-toggle, .anim-footer,
       .cs-version { opacity: 1 !important; transition: none !important; }
     }
 
@@ -1197,6 +1237,25 @@
           loading="eager"
           decoding="async"
         />
+      </div>
+
+      <!-- ── Project meta ─────────────────────────────────────── -->
+      <div class="cs-meta-block anim-meta">
+        <div class="cs-meta">
+          <div class="cs-meta__col">
+            <span class="cs-meta__label">Intermittent Timeline</span>
+            <span class="cs-meta__value">Jan 2025 – May 2026</span>
+          </div>
+          <div class="cs-meta__col">
+            <span class="cs-meta__label">My Role</span>
+            <span class="cs-meta__value">Product Designer</span>
+          </div>
+          <div class="cs-meta__col">
+            <span class="cs-meta__label">Collaborators</span>
+            <span class="cs-meta__value">Founders<br>1 Backend Engineer<br>1 Frontend Engineer</span>
+          </div>
+        </div>
+        <div class="cs-divider" aria-hidden="true"></div>
       </div>
 
       <!-- ── Toggle ───────────────────────────────────────────── -->
@@ -1988,15 +2047,20 @@
           { opacity: 1, transform: 'translateY(0) scale(1)' },
           900, 180
         );
+        anim(document.querySelector('.anim-meta'),
+          { opacity: 0, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+          760, 330
+        );
         anim(document.querySelector('.anim-toggle'),
           { opacity: 0, transform: 'translateY(20px)' },
           { opacity: 1, transform: 'translateY(0)' },
-          760, 360
+          760, 440
         );
         anim(document.querySelector('.anim-footer'),
           { opacity: 0, transform: 'translateY(20px)' },
           { opacity: 1, transform: 'translateY(0)' },
-          760, 480
+          760, 560
         );
       }
 

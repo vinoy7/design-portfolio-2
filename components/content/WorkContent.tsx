@@ -234,7 +234,7 @@ export default function WorkContent() {
           }}
         >
           <div className="flex flex-col gap-6">
-            <MetaRow tags={["B2B", "FinTech"]} date="Jan 2025 - Present" />
+            <MetaRow tags={["B2B", "FinTech"]} date="Jan 2025 - May 2026" />
             <div className="flex flex-col gap-2">
               <CardTitle>Designing Trust at Fusepay</CardTitle>
               <CardSubtitle>
