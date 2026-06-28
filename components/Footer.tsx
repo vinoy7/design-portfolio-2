@@ -2,24 +2,40 @@ import Image from "next/image";
 import ctaBg from "@/assets/about-me/cta-bg-texture.png";
 import BookACallButton from "./BookACallButton";
 
-export default function Footer({ showCta = true }: { showCta?: boolean }) {
+export default function Footer({
+  showCta = true,
+  linkGap = 20,
+  ctaTitleSize = 32,
+  ctaTitleLh = 40,
+  ctaHeight = 245,
+  ctaGap = 35,
+  compactBg = false,
+}: {
+  showCta?: boolean;
+  linkGap?: number;
+  ctaTitleSize?: number;
+  ctaTitleLh?: number;
+  ctaHeight?: number;
+  ctaGap?: number;
+  /** Bleed the texture far past a short block so its faint edge bands stay out of view (tablet). */
+  compactBg?: boolean;
+}) {
   return (
     <div className="flex flex-col" style={{ gap: "105px" }}>
       {/* CTA section — hidden on About Me page */}
       {showCta && (
       <div
         className="relative overflow-hidden"
-        style={{ background: "#000", height: "245px", /* clipPath: "inset(0 round 12px)" */ }}
+        style={{ background: "#000", height: `${ctaHeight}px`, /* clipPath: "inset(0 round 12px)" */ }}
       >
         {/* Background texture */}
         <div
           className="absolute"
-          style={{
-            left: 0,
-            bottom: "-85px",
-            width: "100%",
-            height: "693px",
-          }}
+          style={
+            compactBg
+              ? { top: "-220px", bottom: "-220px", left: 0, right: 0 }
+              : { left: 0, bottom: "-85px", width: "100%", height: "693px" }
+          }
         >
           <Image
             src={ctaBg}
@@ -37,15 +53,15 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
             right: 0,
             top: "50%",
             transform: "translateY(-50%)",
-            gap: "35px",
+            gap: `${ctaGap}px`,
           }}
         >
           <div
             style={{
               fontFamily: "var(--font-averia)",
               fontWeight: 400,
-              fontSize: "32px",
-              lineHeight: "40px",
+              fontSize: `${ctaTitleSize}px`,
+              lineHeight: `${ctaTitleLh}px`,
               letterSpacing: "-0.64px",
               color: "#000",
               textAlign: "center",
@@ -75,7 +91,7 @@ export default function Footer({ showCta = true }: { showCta?: boolean }) {
           © 2026 Vinoy Varghese.
         </p>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center" style={{ gap: `${linkGap}px` }}>
           {[
             { label: "Email", href: "mailto:vinoy.248@gmail.com", external: false },
             { label: "GitHub", href: "https://github.com/vinoy7", external: true },

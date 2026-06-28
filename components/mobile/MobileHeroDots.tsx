@@ -4,16 +4,15 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * Mobile dot-portrait — same physics as desktop HeroDots but:
- * - Geometry: WIN 343×254, centered crop (sx=163/scale vs 79.5/scale)
- * - No pillTracker (no matter-js pill easter egg on mobile)
+ * Pointer/touch dot-portrait — same physics as desktop HeroDots but:
  * - pointermove instead of mousemove → covers touch drag repel
+ * - No pillTracker (no matter-js pill easter egg)
  * - Tap (click) sequence still triggers burst→globe→resolve
+ *
+ * Geometry is parametrized so the same canvas serves mobile (default 343×254
+ * centered crop) and tablet (283×284, crop offset 111/0). The anchor box must
+ * match win×win in CSS px for the dots to land on the photo.
  */
-
-const WIN_W = 343;
-const WIN_H = 254;
-const DIV_W = 669;
 
 const STEP = 2;
 const DOT  = 3;
@@ -51,13 +50,32 @@ const easeOut  = (t: number) => 1 - Math.pow(1 - t, 3);
 export default function MobileHeroDots({
   anchorRef,
   src,
+  winW = 343,
+  winH = 254,
+  divW = 669,
+  cropX = 163, // (669-343)/2 — centered crop (mobile default)
+  cropY = 65,
+  onClickCount,
+  onSettled,
 }: {
   anchorRef: React.RefObject<HTMLDivElement | null>;
   src: string;
+  winW?: number;
+  winH?: number;
+  divW?: number;
+  cropX?: number;
+  cropY?: number;
+  onClickCount?: (n: number) => void;
+  onSettled?: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const onClickCountRef = useRef(onClickCount);
+  const onSettledRef = useRef(onSettled);
+  useEffect(() => { onClickCountRef.current = onClickCount; }, [onClickCount]);
+  useEffect(() => { onSettledRef.current = onSettled; }, [onSettled]);
 
   useEffect(() => {
+    const WIN_W = winW, WIN_H = winH, DIV_W = divW;
     const canvas = canvasRef.current;
     const anchor = anchorRef.current;
     if (!canvas || !anchor) return;
@@ -130,10 +148,10 @@ export default function MobileHeroDots({
     img.src = src;
     img.onload = () => {
       if (disposed) return;
-      // Centered-crop the portrait: same as desktop but narrower window
+      // Crop the portrait to the window. Offsets are in DIV_W-space px.
       const scale = DIV_W / img.naturalWidth;
-      const sx    = 163 / scale;           // (669-343)/2 = 163px margin each side
-      const sy    = 65  / scale;           // same vertical crop as desktop
+      const sx    = cropX / scale;
+      const sy    = cropY / scale;
       const sw    = WIN_W / scale;
       const sh    = WIN_H / scale;
 
@@ -193,6 +211,7 @@ export default function MobileHeroDots({
 
     function clickImpulse(cx: number, cy: number) {
       clicks++;
+      onClickCountRef.current?.(clicks);
       if (clicks >= 5) { triggerBurst(); return; }
       const power = 380 * clicks;
       const R     = 220;
@@ -317,7 +336,7 @@ export default function MobileHeroDots({
           vx[i] = nvx; vy[i] = nvy;
           if (phase === "intro") { const ex = tx - px[i], ey = ty - py[i]; s += ex * ex + ey * ey; }
         }
-        if (phase === "intro" && s / N < 1.5) { phase = "idle"; stiff = IDLE_STIFF; damp = IDLE_DAMP; }
+        if (phase === "intro" && s / N < 1.5) { phase = "idle"; stiff = IDLE_STIFF; damp = IDLE_DAMP; onSettledRef.current?.(); }
       }
 
       draw();
@@ -393,7 +412,7 @@ export default function MobileHeroDots({
       window.removeEventListener("click",       onClick);
       window.removeEventListener("resize",      onResize);
     };
-  }, [anchorRef, src]);
+  }, [anchorRef, src, winW, winH, divW, cropX, cropY]);
 
   return createPortal(
     <canvas

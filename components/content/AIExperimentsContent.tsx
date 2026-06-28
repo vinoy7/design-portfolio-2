@@ -18,7 +18,7 @@ const revealProps = (delay = 0) => ({
   transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 });
 
-function PlayOverlayButton({ onClick }: { onClick: () => void }) {
+function PlayOverlayButton({ onClick, showScrim = true }: { onClick: () => void; showScrim?: boolean }) {
   return (
     <button
       type="button"
@@ -27,6 +27,7 @@ function PlayOverlayButton({ onClick }: { onClick: () => void }) {
       className="absolute inset-0 flex items-center justify-center group cursor-pointer"
     >
       {/* Contrast scrim — keeps the glass disc legible over any poster, lifts on hover */}
+      {showScrim && (
       <span
         aria-hidden
         className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 motion-reduce:transition-none"
@@ -35,6 +36,7 @@ function PlayOverlayButton({ onClick }: { onClick: () => void }) {
             "radial-gradient(120% 120% at 50% 50%, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.12) 45%, rgba(0,0,0,0) 75%)",
         }}
       />
+      )}
 
       {/* Play icon only — no disc, no ring. Drop-shadow keeps it legible. */}
       <span
@@ -65,7 +67,7 @@ type Experiment = {
  * the video box from the thumbnail rect to the centered 85vw×85vh overlay.
  * Slightly underdamped → a soft "pop" on open and a smooth recoil on exit.
  */
-function ExperimentMedia({ exp }: { exp: Experiment }) {
+export function ExperimentMedia({ exp, showScrim = true }: { exp: Experiment; showScrim?: boolean }) {
   const [open, setOpen] = useState(false);
 
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -217,7 +219,7 @@ function ExperimentMedia({ exp }: { exp: Experiment }) {
         draggable={false}
         onContextMenu={(e) => e.preventDefault()}
       />
-      <PlayOverlayButton onClick={openModal} />
+      <PlayOverlayButton onClick={openModal} showScrim={showScrim} />
 
       {/* Magnified overlay — transition driven by Matter.js.
           Portaled to <body> so position:fixed escapes the card's transformed
@@ -357,7 +359,7 @@ function CardBody({ children }: { children: React.ReactNode }) {
 }
 
 /** Inline blue link: underline wipes in left→right on hover, weight 400→500. */
-function InlineLink({ href, children }: { href: string; children: React.ReactNode }) {
+export function InlineLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a
       href={href}

@@ -34,6 +34,8 @@ interface TabNavProps {
   intro?: boolean;
   /** When false (during intro, pre-pill), the active tab renders in default style. */
   showActiveStyle?: boolean;
+  /** Magnetic pill stretch on hover. Off for tablet (touch profile). */
+  magnetic?: boolean;
 }
 
 export default function TabNav({
@@ -41,6 +43,7 @@ export default function TabNav({
   onChange,
   intro = false,
   showActiveStyle = true,
+  magnetic = true,
 }: TabNavProps) {
   const reduce = useReducedMotion();
   const [hoveredTab, setHoveredTab] = useState<Tab | null>(null);
@@ -106,7 +109,7 @@ export default function TabNav({
   const hoverIdx = hoveredTab ? TABS.findIndex((t) => t.id === hoveredTab) : -1;
   let stretchLeft = 0;
   let stretchRight = 0;
-  if (!reduce && hoverIdx >= 0 && hoverIdx !== activeIdx) {
+  if (magnetic && !reduce && hoverIdx >= 0 && hoverIdx !== activeIdx) {
     const pull = PULL_BY_DIST[Math.abs(hoverIdx - activeIdx)];
     if (hoverIdx > activeIdx) stretchRight = pull;
     else stretchLeft = pull;
