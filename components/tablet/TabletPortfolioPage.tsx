@@ -15,7 +15,7 @@ function TabDescription({ tab }: { tab: Tab }) {
   const descriptions: Record<Tab, string> = {
     work: "I've had the opportunity to design across diverse tech domains; from EdTech & HRTech to implementing AI-driven experiences for SalesTech. Currently, I'm working as a solo designer at a Fintech startup building a modern financial OS for businesses in Seychelles & beyond.",
     playground:
-      "The Playground is a collection of experiments, explorations, and interface ideas that didn't quite make it into the final case studies, but still felt worth sharing. Some are unfinished concepts, while others are quick iterations created out of curiosity or spontaneous ideas.",
+      "This is a collection of experiments, explorations, and interface ideas that didn't quite make it into the final case studies, but still felt worth sharing. Some are unfinished concepts, while others are quick iterations created out of curiosity or spontaneous ideas.",
     ai: "I recently started dabbling with Claude Code and experimenting with things like building a personal Figma plugin, scripting workflows, and generating images and videos for different media use cases. What really amazes me is how easy it has become to build tools that simplify tasks that used to feel repetitive, time-consuming, and frustrating. The barrier between an idea and execution feels smaller than ever now.",
     about: "",
   };
@@ -112,6 +112,7 @@ export default function TabletPortfolioPage() {
             intro={intro}
             showActiveStyle={!intro || pillIn}
             magnetic={false}
+            padX={20}
           />
           {hasDescription && (
             <AnimatePresence mode="wait">

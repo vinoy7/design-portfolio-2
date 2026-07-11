@@ -11,8 +11,8 @@ export type Tab = "work" | "playground" | "ai" | "about";
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "work", label: "Work" },
-  { id: "playground", label: "Playground" },
+  { id: "playground", label: "UI Designs" },
+  { id: "work", label: "Case Studies" },
   { id: "ai", label: "AI Experiments" },
   { id: "about", label: "About Me" },
 ];
@@ -36,6 +36,8 @@ interface TabNavProps {
   showActiveStyle?: boolean;
   /** Magnetic pill stretch on hover. Off for tablet (touch profile). */
   magnetic?: boolean;
+  /** Horizontal padding per tab in px. Tablet uses 16. */
+  padX?: number;
 }
 
 export default function TabNav({
@@ -44,6 +46,7 @@ export default function TabNav({
   intro = false,
   showActiveStyle = true,
   magnetic = true,
+  padX = 24,
 }: TabNavProps) {
   const reduce = useReducedMotion();
   const [hoveredTab, setHoveredTab] = useState<Tab | null>(null);
@@ -631,7 +634,7 @@ export default function TabNav({
               background: "transparent",
               border: "none",
               borderRadius: "60px",
-              padding: "12px 24px",
+              padding: `12px ${padX}px`,
               cursor: "pointer",
               whiteSpace: "nowrap",
             }}
