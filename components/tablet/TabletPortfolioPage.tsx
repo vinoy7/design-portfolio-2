@@ -10,6 +10,7 @@ import TabletAboutContent from "./TabletAboutContent";
 import PlaygroundContent from "../content/PlaygroundContent";
 import Testimonials from "../Testimonials";
 import Footer from "../Footer";
+import { TAB_SLUGS, SLUG_TABS } from "../tabSlugs";
 
 function TabDescription({ tab }: { tab: Tab }) {
   const descriptions: Record<Tab, string> = {
@@ -50,9 +51,9 @@ export default function TabletPortfolioPage() {
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
-    const TABS: Tab[] = ["work", "playground", "ai", "about"];
-    const h = window.location.hash.replace("#", "") as Tab;
-    if (TABS.includes(h)) setActiveTab(h);
+    const slug = window.location.pathname.replace(/^\//, "");
+    const t0 = SLUG_TABS[slug] as Tab | undefined;
+    if (t0) setActiveTab(t0);
     const tPill = setTimeout(() => setPillIn(true), 2000);
     const t = setTimeout(() => setIntro(false), 4300);
     return () => {
@@ -77,7 +78,7 @@ export default function TabletPortfolioPage() {
 
   const handleTab = (tab: Tab) => {
     setActiveTab(tab);
-    history.replaceState(null, "", `#${tab}`);
+    history.replaceState(null, "", `/${TAB_SLUGS[tab]}`);
   };
 
   const showTestimonials = activeTab === "work";

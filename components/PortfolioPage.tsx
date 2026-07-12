@@ -10,6 +10,7 @@ import PlaygroundContent from "./content/PlaygroundContent";
 import AboutMeContent from "./content/AboutMeContent";
 import Testimonials from "./Testimonials";
 import Footer from "./Footer";
+import { TAB_SLUGS, SLUG_TABS } from "./tabSlugs";
 
 function TabDescription({ tab }: { tab: Tab }) {
   const descriptions: Record<Tab, string> = {
@@ -55,10 +56,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
-    // Restore the tab from the URL hash so a reload lands on the same tab.
-    const TABS: Tab[] = ["work", "playground", "ai", "about"];
-    const h = window.location.hash.replace("#", "") as Tab;
-    if (TABS.includes(h)) setActiveTab(h);
+    // Restore the tab from the URL path so a reload lands on the same tab.
+    const slug = window.location.pathname.replace(/^\//, "");
+    const t0 = SLUG_TABS[slug] as Tab | undefined;
+    if (t0) setActiveTab(t0);
     const tPill = setTimeout(() => setPillIn(true), 2000);
     const t = setTimeout(() => setIntro(false), 4300);
     return () => {
@@ -84,7 +85,7 @@ export default function PortfolioPage() {
 
   const handleTab = (tab: Tab) => {
     setActiveTab(tab);
-    history.replaceState(null, "", `#${tab}`);
+    history.replaceState(null, "", `/${TAB_SLUGS[tab]}`);
   };
 
   const showTestimonials = activeTab === "work";

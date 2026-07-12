@@ -10,6 +10,7 @@ import MobileAboutContent from "./MobileAboutContent";
 import MobileTestimonials from "./MobileTestimonials";
 import BookACallButton   from "@/components/BookACallButton";
 import ctaBg             from "@/assets/about-me/cta-bg-texture.png";
+import { TAB_SLUGS, SLUG_TABS } from "@/components/tabSlugs";
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
@@ -110,10 +111,10 @@ export default function MobilePortfolioPage() {
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
-    // Restore tab from hash
-    const TABS: MobileTab[] = ["work", "playground", "about"];
-    const h = window.location.hash.replace("#", "") as MobileTab;
-    if (TABS.includes(h)) setActiveTab(h);
+    // Restore tab from URL path
+    const slug = window.location.pathname.replace(/^\//, "");
+    const t0 = SLUG_TABS[slug] as MobileTab | undefined;
+    if (t0) setActiveTab(t0);
   }, []);
 
   // Media-save block — same as PortfolioPage
@@ -132,7 +133,7 @@ export default function MobilePortfolioPage() {
 
   const handleTab = (tab: MobileTab) => {
     setActiveTab(tab);
-    history.replaceState(null, "", `#${tab}`);
+    history.replaceState(null, "", `/${TAB_SLUGS[tab]}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
