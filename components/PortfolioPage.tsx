@@ -42,7 +42,7 @@ function TabDescription({ tab }: { tab: Tab }) {
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 export default function PortfolioPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("work");
+  const [activeTab, setActiveTab] = useState<Tab>("playground");
   // Initial-load choreography: hero -> tabs -> active pill -> content (slow).
   // `intro` gates the staggered delays so only the first paint is sequenced;
   // later tab switches animate at normal speed.

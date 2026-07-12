@@ -42,7 +42,7 @@ function TabDescription({ tab }: { tab: Tab }) {
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 export default function TabletPortfolioPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("work");
+  const [activeTab, setActiveTab] = useState<Tab>("playground");
   const [intro, setIntro] = useState(true);
   const [pillIn, setPillIn] = useState(false);
   const reduce = useReducedMotion();
