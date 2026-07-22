@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { ExperimentMedia } from "../content/AIExperimentsContent";
 import f360DashboardImg from "@/assets/ai-experiments/f360-dashboard-screenshot.png";
 import nameMyFrameImg from "@/assets/ai-experiments/name-my-frame-screenshot.png";
 import mylosImg from "@/assets/ai-experiments/mylos-adventures-screenshot.png";
 import grokImg from "@/assets/ai-experiments/grok-ad-screenshot.png";
 
-const reveal = (delay = 0) => ({
-  initial: { opacity: 0, y: 56 },
+const reveal = (delay = 0, reduce = false) => ({
+  initial: reduce ? { opacity: 0 } : { opacity: 0, y: 56 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, amount: 0.05 },
   transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
@@ -75,10 +75,11 @@ function VideoCard({ tags, title, mediaH, exp, children }: {
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion() ?? false;
   return (
     <motion.div
       ref={ref}
-      {...reveal(0)}
+      {...reveal(0, reduce)}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('button[aria-label="Play video"]')) return;
         ref.current?.querySelector<HTMLButtonElement>('button[aria-label="Play video"]')?.click();
@@ -95,11 +96,13 @@ function VideoCard({ tags, title, mediaH, exp, children }: {
 }
 
 export default function TabletAIExperimentsContent() {
+  const reduce = useReducedMotion() ?? false;
+
   return (
     <div className="flex flex-col" style={{ gap: "60px" }}>
       {/* Card 0: AI-assisted Dashboard — whole card links to the prototype */}
       <motion.a
-        {...reveal(0)}
+        {...reveal(0, reduce)}
         href="https://vinoy7.github.io/F360-Dashboard/"
         target="_blank"
         rel="noopener noreferrer"

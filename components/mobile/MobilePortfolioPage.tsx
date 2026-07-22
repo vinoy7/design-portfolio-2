@@ -111,10 +111,15 @@ export default function MobilePortfolioPage() {
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
-    // Restore tab from URL path
+    // Restore tab from URL path. ponytail: mobile only renders Work + About, so
+    // /ui-designs and /ai (valid desktop slugs) would land on a blank tab with no
+    // pill highlighted. Fall those back to Work and correct the URL.
     const slug = window.location.pathname.replace(/^\//, "");
-    const t0 = SLUG_TABS[slug] as MobileTab | undefined;
-    if (t0) setActiveTab(t0);
+    if (!slug) return;
+    const t0 = SLUG_TABS[slug];
+    const tab: MobileTab = t0 === "about" ? "about" : "work";
+    setActiveTab(tab);
+    if (t0 !== tab) history.replaceState(null, "", `/${TAB_SLUGS[tab]}`);
   }, []);
 
   // Media-save block — same as PortfolioPage

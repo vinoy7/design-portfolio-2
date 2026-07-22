@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import vinoyPortrait from "@/assets/about-me/vinoy-portrait-tab.png";
 import MobilePhotoStack from "../mobile/MobilePhotoStack";
 
@@ -20,23 +20,25 @@ function BodyText({ children }: { children: React.ReactNode }) {
   );
 }
 
-const reveal = (delay = 0) => ({
-  initial: { opacity: 0, y: 56 },
+const reveal = (delay = 0, reduce = false) => ({
+  initial: reduce ? { opacity: 0 } : { opacity: 0, y: 56 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, amount: 0.05 },
   transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 });
 
 export default function TabletAboutContent() {
+  const reduce = useReducedMotion() ?? false;
+
   return (
     <div className="flex flex-col">
       {/* Full-width portrait — 584×284 landscape crop */}
-      <motion.div {...reveal(0)} className="relative overflow-hidden w-full" style={{ height: "284px", background: "#f2f2f2" }}>
+      <motion.div {...reveal(0, reduce)} className="relative overflow-hidden w-full" style={{ height: "284px", background: "#f2f2f2" }}>
         <Image src={vinoyPortrait} alt="Vinoy Varghese" fill className="object-cover" sizes="584px" />
       </motion.div>
 
       {/* How design happened for me? */}
-      <motion.div {...reveal(0.2)} className="flex flex-col gap-2" style={{ marginTop: "20px" }}>
+      <motion.div {...reveal(0.2, reduce)} className="flex flex-col gap-2" style={{ marginTop: "20px" }}>
         <SectionHeading>How design happened for me?</SectionHeading>
         <div className="flex flex-col" style={{ gap: "20px" }}>
           <BodyText>
@@ -70,7 +72,7 @@ export default function TabletAboutContent() {
       </motion.div>
 
       {/* Beyond design... */}
-      <motion.div {...reveal(0)} className="flex flex-col gap-2" style={{ marginTop: "54px" }}>
+      <motion.div {...reveal(0, reduce)} className="flex flex-col gap-2" style={{ marginTop: "54px" }}>
         <SectionHeading>Beyond design...</SectionHeading>
         <div className="flex flex-col" style={{ gap: "20px" }}>
           <BodyText>
@@ -94,7 +96,7 @@ export default function TabletAboutContent() {
       </motion.div>
 
       {/* Swipe photo stack (mobile interaction) */}
-      <motion.div {...reveal(0)} style={{ marginTop: "136px", marginBottom: "100px" }}>
+      <motion.div {...reveal(0, reduce)} style={{ marginTop: "136px", marginBottom: "100px" }}>
         <MobilePhotoStack />
       </motion.div>
     </div>

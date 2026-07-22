@@ -111,8 +111,8 @@ const LINKS = {
     "https://smoggy-oil-957.notion.site/Revamping-Interface-for-a-niche-job-recruitment-platform-4807e014f5aa49ce8c39dc004a6e361b",
 };
 
-const reveal = (delay = 0) => ({
-  initial: { opacity: 0, y: 56 },
+const reveal = (delay = 0, reduce = false) => ({
+  initial: reduce ? { opacity: 0 } : { opacity: 0, y: 56 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, amount: 0.05 },
   transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
@@ -143,7 +143,7 @@ export default function TabletWorkContent() {
     <div className="flex flex-col gap-5">
       {/* Card 1: Fusepay — image left, text right */}
       <motion.a
-        {...reveal(0)}
+        {...reveal(0, reduce)}
         href={LINKS.fusepay}
         className="flex overflow-hidden"
         style={{ background: "#fff", border: CARD_BORDER, textDecoration: "none", color: "inherit", height: "284px" }}
@@ -166,7 +166,7 @@ export default function TabletWorkContent() {
 
       {/* Card 2: ConnectAndSell — text left, image right */}
       <motion.a
-        {...reveal(0.1)}
+        {...reveal(0.1, reduce)}
         href={LINKS.connectAndSell}
         target="_blank"
         rel="noopener noreferrer"

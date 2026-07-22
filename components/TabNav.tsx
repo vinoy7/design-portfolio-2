@@ -458,6 +458,9 @@ export default function TabNav({
   };
 
   const onPillPointerUp = (e: React.PointerEvent) => {
+    // Also bound to lostpointercapture, which fires on a normal pointerup too —
+    // bail if the drag is already over so the magnet check runs exactly once.
+    if (!draggingRef.current) return;
     try {
       (e.target as Element).releasePointerCapture?.(e.pointerId);
     } catch {
@@ -574,10 +577,18 @@ export default function TabNav({
     };
     window.addEventListener("resize", onResize);
 
+    // Losing the window mid-drag (cmd-tab, releasing the button outside the
+    // browser) means no pointerup ever lands, so the drag constraint would stay
+    // pinned to the last cursor point and hang the pill in mid-air forever.
+    // Drop the constraint and let physics take it from there.
+    const onBlur = () => releaseDrag();
+    window.addEventListener("blur", onBlur);
+
     return () => {
       alive = false;
       Object.assign(pill, { active: false });
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("blur", onBlur);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = 0;
       Matter.Events.off(engine, "collisionStart", onCollide);
@@ -741,6 +752,7 @@ export default function TabNav({
             onPointerMove={onPillPointerMove}
             onPointerUp={onPillPointerUp}
             onPointerCancel={onPillPointerUp}
+            onLostPointerCapture={onPillPointerUp}
             style={{
               position: "fixed",
               left: 0,

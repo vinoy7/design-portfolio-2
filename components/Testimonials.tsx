@@ -332,14 +332,22 @@ export default function Testimonials() {
       }
     }
 
+    // Detaching is separate from onUp so the effect cleanup can call it too: an
+    // unmount (or touchcancel) mid-drag would otherwise leave these bound to
+    // document forever, mutating a detached card and pinning userSelect:none.
+    function detach() {
+      document.removeEventListener("mousemove",   onMove);
+      document.removeEventListener("mouseup",     onUp);
+      document.removeEventListener("touchmove",   onMove);
+      document.removeEventListener("touchend",    onUp);
+      document.removeEventListener("touchcancel", onUp);
+      document.body.style.userSelect = "";
+    }
+
     function onUp() {
       if (!drag.active) return;
       drag.active = false;
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup",   onUp);
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("touchend",  onUp);
-      document.body.style.userSelect = "";
+      detach();
 
       const elapsed  = Math.max(1, Date.now() - drag.startTime);
       const dist     = Math.sqrt(drag.dx ** 2 + drag.dy ** 2);
@@ -374,10 +382,11 @@ export default function Testimonials() {
       }
       document.body.style.userSelect = "none";
 
-      document.addEventListener("mousemove", onMove);
-      document.addEventListener("mouseup",   onUp);
-      document.addEventListener("touchmove", onMove, { passive: false });
-      document.addEventListener("touchend",  onUp);
+      document.addEventListener("mousemove",   onMove);
+      document.addEventListener("mouseup",     onUp);
+      document.addEventListener("touchmove",   onMove, { passive: false });
+      document.addEventListener("touchend",    onUp);
+      document.addEventListener("touchcancel", onUp);
     }
 
     function onKeyDown(e: KeyboardEvent) {
@@ -392,6 +401,7 @@ export default function Testimonials() {
 
     return () => {
       headingObserver?.disconnect();
+      detach();
       stackEl.removeEventListener("mousedown",  onDown as EventListener);
       stackEl.removeEventListener("touchstart", onDown as EventListener);
       stackEl.removeEventListener("keydown",    onKeyDown);
